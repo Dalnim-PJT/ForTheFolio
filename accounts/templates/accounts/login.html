@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}로그인{% endblock title %}
+
+{% block content %}
+<article>
+  <form action="{% url 'accounts:login' %}" method="POST">
+    {% csrf_token %}
+    <div>{{ form.email }}</div>
+    <div>{{ form.password }}</div>
+    <input type="submit" value="로그인">
+  </form>
+  <a href="{% url 'accounts:signup' %}">회원가입</a>
+</article>
+{% endblock content %}

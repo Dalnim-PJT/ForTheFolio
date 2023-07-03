@@ -1,0 +1,13 @@
+.header--container {
+  display: flex;
+  justify-content: space-between;
+  background-color: #fff;
+  box-shadow: 0 5px 5px -5px rgba(41, 85, 115, 0.21);
+  padding: 1rem;
+}
+
+.header--logo {
+  border: 1px solid #000;
+  border-radius: 10px;
+  padding: 0.3rem 0.5rem;
+}

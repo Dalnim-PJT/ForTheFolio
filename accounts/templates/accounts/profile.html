@@ -1,0 +1,13 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}마이페이지{% endblock title %}
+
+{% block content %}
+<article>
+  <div>
+    <a href="{% url 'accounts:logout' %}">로그아웃</a>
+  </div>
+</article>
+{% endblock content %}
+
+       
