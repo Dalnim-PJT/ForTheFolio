@@ -59,23 +59,47 @@ class TechStack(models.Model):
     stack = models.CharField(max_length=20, choices=STACK_CHOICES)
 
 
+# 제공하는 템플릿 모델
 class P_templates(models.Model):
-    name = models.CharField(max_length=50)
+    title = models.CharField(max_length=50)
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_templates')
+
+    def __str__(self):
+        return self.title
+
+
+# 제공하는 템플릿 모델에 사용되는 예시 유저 정보
+class P_exampleuser(models.Model):
+    username = models.CharField(max_length=50)
     job = models.CharField(max_length=20)
     phone = models.CharField(max_length=20)
     email = models.EmailField()
-    github = models.URLField()
     introduction = models.TextField()
     stack = models.ManyToManyField(TechStack, related_name="template_stacks")
 
-    def __str__(self):
-        return self.name
 
-    
+# 사용자의 정보를 입력해놓는 모델
+class Mydatas(models.Model):
+    user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50)
+    username = models.CharField(max_length=50)
+
+    def Mydatas_profileimage_path(instance, filename):
+        return f'Mydatas/profile/{instance.user.email}/{filename}'
+    image = ProcessedImageField(upload_to=Mydatas_profileimage_path, blank=True, null=True, processors=[ResizeToFill(100,100)])
+    job = models.CharField(max_length=20)
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
+    introduction = models.TextField()
+    stack = models.ManyToManyField(TechStack, related_name="mydata_stacks")
+
+
+# 포트폴리오에 저장하는 모델
 class Portfolios(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    tempalte = models.ForeignKey(P_templates, on_delete=models.CASCADE)
-    name = models.CharField(max_length=50)
+    template = models.ForeignKey(P_templates, on_delete=models.CASCADE)
+    title = models.CharField(max_length=50)
+    username = models.CharField(max_length=50)
 
     def Portfolio_profileimage_path(instance, filename):
         return f'Portfolio/profile/{instance.user.email}/{filename}'
@@ -83,28 +107,40 @@ class Portfolios(models.Model):
     job = models.CharField(max_length=20)
     phone = models.CharField(max_length=20)
     email = models.EmailField()
-    github = models.URLField()
     introduction = models.TextField()
     stack = models.ManyToManyField(TechStack, related_name="portfolio_stacks")
-    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_portfolios')
 
 
-class Career(models.Model):
-    portfolio = models.ForeignKey(Portfolios, on_delete=models.CASCADE)
+# 중복을 피하기 위한 가상 모델
+class BaseInfo(models.Model):
+    mydata = models.ForeignKey(Mydatas, on_delete=models.CASCADE, null=True, blank=True)
+    portfolio = models.ForeignKey(Portfolios, on_delete=models.CASCADE, null=True, blank=True)
+
+    class Meta:
+        abstract = True
+
+
+class Links(BaseInfo):
+    LINK_CHOICES = [('GitHub', 'GitHub'), ('Youtube','Youtube'), ('Facebook','Facebook'), ('Instagram', 'Instagram'),
+                    ('Notion', 'Notion'), ('Link', 'Link'), ('Google Drive', 'Google Drive'), ('LinkedIn', 'LinkedIn'), ('Blog', 'Blog'),
+                    ('Behance', 'Behance'), ('Brunch', 'Brunch'), ('Medium', 'Medium'),]
+    link = models.CharField(max_length=20, choices=LINK_CHOICES)
+    content = models.URLField()
+
+
+class Career(BaseInfo):
     content = models.TextField()
 
 
-class Pjts(models.Model):
-    portfolio = models.ForeignKey(Portfolios, on_delete=models.CASCADE)
+class Pjts(BaseInfo):
     name = models.CharField(max_length=50)
     content = models.TextField()
     role = models.TextField()
     stack = models.ManyToManyField(TechStack, related_name="pjt_stacks")
 
 
-class Pjtimages(models.Model):
+class Pjtimages(BaseInfo):
     pjt = models.ForeignKey(Pjts, on_delete=models.CASCADE)
     def Pjt_image_path(instance, filename):
         return f'pjt/{instance.pk}/{filename}'
     image = ProcessedImageField(upload_to=Pjt_image_path, blank=True, null=True)
-    
