@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}MY DATA update{% endblock title %}
+
+
+{% block content %}
+
+<form action="{% url 'portfolios:m_update' my_data.title %}" method='POST' enctype='multipart/form-data'>
+{% csrf_token %}
+  <h3>basic</h3>
+  {{ basic.as_p }}
+  <h3>link</h3>
+  {{ link.as_p }}
+  <h3>pjt</h3>
+  {% for pjt1 in pjt %}
+    {{ pjt1.as_p }}
+  {% endfor %}
+  <h3>pjtimage</h3>
+  {{ pjtimage.as_p }}
+  <h3>career</h3>
+  {{ career.as_p }}
+  <input type="submit" value="등록">
+</form>
+{% endblock content %}

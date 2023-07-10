@@ -15,16 +15,17 @@
         <a class="header--logo" href="#">FOR THE FOLIO</a>
         <nav>
           <ul>
-            <li><a href="#">템플릿</a></li>
+            <li><a href="{% url 'portfolios:index' %}">템플릿</a></li>
             <li><a href="#">요금</a></li>
           </ul>
         </nav>
       </div>
       <div>
         {% if request.user.is_authenticated %}
-        <a href="{% url 'accounts:profile' user %}">마이페이지</a>
+          <a href="{% url 'accounts:logout' %}">로그아웃</a>
+          {% comment %} <a href="{% url 'accounts:profile' user %}">마이페이지</a> {% endcomment %}
         {% else %}
-        <a href="{% url 'accounts:login' %}">로그인</a>
+          <a href="{% url 'accounts:login' %}">로그인</a>
         {% endif %}
       </div>
     </header>

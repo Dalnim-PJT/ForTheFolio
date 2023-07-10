@@ -125,16 +125,16 @@ class Links(BaseInfo):
                     ('Notion', 'Notion'), ('Link', 'Link'), ('Google Drive', 'Google Drive'), ('LinkedIn', 'LinkedIn'), ('Blog', 'Blog'),
                     ('Behance', 'Behance'), ('Brunch', 'Brunch'), ('Medium', 'Medium'),]
     link = models.CharField(max_length=20, choices=LINK_CHOICES)
-    content = models.URLField()
+    link_content = models.URLField()
 
 
 class Career(BaseInfo):
-    content = models.TextField()
+    career_content = models.TextField()
 
 
 class Pjts(BaseInfo):
     name = models.CharField(max_length=50)
-    content = models.TextField()
+    pjts_content = models.TextField()
     role = models.TextField()
     stack = models.ManyToManyField(TechStack, related_name="pjt_stacks")
 
@@ -144,3 +144,4 @@ class Pjtimages(BaseInfo):
     def Pjt_image_path(instance, filename):
         return f'pjt/{instance.pk}/{filename}'
     image = ProcessedImageField(upload_to=Pjt_image_path, blank=True, null=True)
+    

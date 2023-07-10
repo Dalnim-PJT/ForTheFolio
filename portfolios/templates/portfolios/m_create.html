@@ -1,0 +1,45 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}MY DATA{% endblock title %}
+
+
+{% block content %}
+
+<form action="{% url 'portfolios:m_create' %}" method='POST' enctype='multipart/form-data'>
+  {% csrf_token %}
+  <h3>basic</h3>
+  {{ basic.as_p }}
+  <h3>link</h3>
+  {{ link.as_p }}
+  <h3>pjt</h3>
+  {{ pjt.as_p }}
+  <fieldset id="pjt-formset">
+    <legend>PJT Entries</legend>
+    <div id="pjt-entries">
+      <div class="pjt-entry">
+        {{ pjt.0.as_table }}
+      </div>
+    </div>
+    <button type="button" id="add-pjt-entry">Add PJT Entry</button>
+  </fieldset>
+  <h3>pjtimage</h3>
+  {{ pjtimage.as_p }}
+  <h3>career</h3>
+  {{ career.as_p }}
+  <input type="submit" value="등록">
+</form>
+
+
+<script>
+  function addPjtField() {
+    const pjtEntries = document.getElementById("pjt-entries");
+    const lastPjtEntry = pjtEntries.lastElementChild;
+    const newPjtEntry = document.createElement("div");
+    newPjtEntry.className = "pjt-entry";
+    newPjtEntry.innerHTML = lastPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-${pjtEntries.childElementCount}`);
+    pjtEntries.appendChild(newPjtEntry);
+  }
+
+  document.getElementById("add-pjt-entry").addEventListener("click", addPjtField);
+</script>
+{% endblock content %}
