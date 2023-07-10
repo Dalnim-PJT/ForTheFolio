@@ -4,6 +4,7 @@ from imagekit.forms import ProcessedImageField
 from imagekit.processors import ResizeToFill
 import os
 from django.conf import settings
+from django.core.validators import URLValidator
 
 # BasicForm, PortfolioForm 중복을 피하기 위한 BaseForm
 class BaseForm(forms.ModelForm):
@@ -28,7 +29,8 @@ class BaseForm(forms.ModelForm):
             attrs={
                 'placeholder': '프로필 이미지',
             }
-        )
+        ),
+        spec_id='image_size',
     )
 
     job = forms.CharField(
@@ -89,6 +91,7 @@ class PortfolioForm(BaseForm):
 
 class PjtForm(forms.ModelForm):
     name = forms.CharField(
+        required=False,
         widget=forms.TextInput(
             attrs={
                 'placeholder': '프로젝트 제목',
@@ -96,7 +99,8 @@ class PjtForm(forms.ModelForm):
         )
     )
 
-    content = forms.CharField(
+    pjts_content = forms.CharField(
+        required=False,
         widget=forms.Textarea(
             attrs={
                 'placeholder': '소개',
@@ -105,6 +109,7 @@ class PjtForm(forms.ModelForm):
     )
 
     role = forms.CharField(
+        required=False,
         widget=forms.Textarea(
             attrs={
                 'placeholder': '역할 및 기능',
@@ -114,6 +119,7 @@ class PjtForm(forms.ModelForm):
 
     stack = forms.ChoiceField(
         choices = TechStack.STACK_CHOICES,
+        required=False,
         widget=forms.Select(
             attrs={
                 'placeholder': '기술 스택 선택',
@@ -122,10 +128,11 @@ class PjtForm(forms.ModelForm):
     )
     class Meta:
         model = Pjts
-        fields = ('name', 'content', 'role', 'stack')
+        fields = ('name', 'pjts_content', 'role', 'stack')
 
 class PjtImageForm(forms.ModelForm):
     image = forms.ImageField(
+        required=False,
         widget=forms.ClearableFileInput(
             attrs={
                 'placeholder': '프로젝트 이미지',
@@ -145,10 +152,10 @@ class DeletePjtImageForm(forms.Form):
         choices=[]
     )
 
-    def __init__(self, post, *args, **kwargs):
+    def __init__(self, pjt, *args, **kwargs):
         super().__init__(*args, **kwargs)
         self.fields['delete_images'].choices = [
-            (image.pk, image.image.url) for image in Pjtimages.objects.filter(post=post)
+            (image.pk, image.image.url) for image in Pjtimages.objects.filter(pjt=pjt)
         ]
 
     def clean(self):
@@ -161,7 +168,8 @@ class DeletePjtImageForm(forms.Form):
             images.delete()
 
 class CareerForm(forms.ModelForm):
-    content = forms.CharField(
+    career_content = forms.CharField(
+        required=False,
         widget=forms.TextInput(
             attrs={
                 'placeholder': '경력',
@@ -171,11 +179,12 @@ class CareerForm(forms.ModelForm):
 
     class Meta:
         model = Career
-        fields = ('content',)
+        fields = ('career_content',)
 
 class LinkForm(forms.ModelForm):
     link = forms.ChoiceField(
         choices = Links.LINK_CHOICES,
+        required=False,
         widget=forms.Select(
             attrs={
                 'placeholder': '선택',
@@ -183,7 +192,9 @@ class LinkForm(forms.ModelForm):
         )
     )
 
-    content = forms.URLField(
+    link_content = forms.URLField(
+        required=False,
+        validators=[URLValidator()],
         widget=forms.URLInput(
             attrs={
                 'placeholder': 'url',
@@ -192,4 +203,4 @@ class LinkForm(forms.ModelForm):
     )
     class Meta:
         model = Links
-        fields = ('link', 'content',)
+        fields = ('link', 'link_content',)

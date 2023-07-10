@@ -40,7 +40,8 @@ class CustomUserCreationForm(UserCreationForm):
 
 
 class CustomAuthenticationForm(AuthenticationForm):
-    email = forms.EmailField(
+    # username = forms.CharField(required=False)
+    username = forms.EmailField(
         label = False,
         widget = forms.EmailInput(
             attrs = {
@@ -61,8 +62,8 @@ class CustomAuthenticationForm(AuthenticationForm):
     )
 
     class Meta:
-        model = get_user_model
-        fields = ('email', 'password')
+        model = get_user_model()
+        fields = ('username', 'password',)
 
 
 class CustomUserChangeForm(UserChangeForm):

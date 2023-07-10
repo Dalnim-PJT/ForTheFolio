@@ -8,6 +8,15 @@
     <a href="{% url 'accounts:logout' %}">로그아웃</a>
   </div>
 </article>
+<article>
+  {% for md in mydata %}
+    <div>
+      {{ md.user }}
+      {{ md.title }}
+      {{ md.content }}
+    </div>
+  {% endfor %}
+</article>
 {% endblock content %}
 
        

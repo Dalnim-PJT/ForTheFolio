@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import User
 from .forms import CustomUserCreationForm, CustomUserChangeForm, CustomPasswordChangeForm, CustomAuthenticationForm
+from portfolios.models import Mydatas
 
 # Create your views here.
 
@@ -105,10 +106,12 @@ def change_password(request):
 
 
 @login_required
-def profile(request, username):
+def profile(request, user_pk):
     User = get_user_model()
-    person = User.objects.get(username=username)
+    person = User.objects.get(pk=user_pk)
+    mydata = Mydatas.objects.filter(user=person)
     context = {
         'person': person,
+        'mydata': mydata,
     }
     return render(request, 'accounts/profile.html', context)
