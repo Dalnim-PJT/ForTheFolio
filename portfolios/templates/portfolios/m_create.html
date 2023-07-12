@@ -9,37 +9,116 @@
   {% csrf_token %}
   <h3>basic</h3>
   {{ basic.as_p }}
+  stack
+  <select multiple class="select" id="b_stack_multi" name="b_stack_multi" style="width:335px; height:70px;" multiple="multiple">
+    {% for stack in stacks %}
+      <option value="{{stack.0}}">{{stack.0}}</option>
+    {% endfor %}
+  </select>
   <h3>link</h3>
-  {{ link.as_p }}
+  <fieldset id="link-formset">
+    <legend>LINK Entries</legend>
+    <div id="link-entries">
+      <div class="link-entry">
+        {{ link.as_table }}
+      </div>
+    </div>
+    <button type="button" id="add-link-entry">Add LINK Entry</button>
+  </fieldset>
+
   <h3>pjt</h3>
-  {{ pjt.as_p }}
   <fieldset id="pjt-formset">
     <legend>PJT Entries</legend>
     <div id="pjt-entries">
       <div class="pjt-entry">
-        {{ pjt.0.as_table }}
+        {{ pjt.as_table }}
+        <select multiple class="select" id="p_stack_multi-0" name="p_stack_multi-0" style="width:335px; height:70px;" multiple="multiple">
+          {% for stack in stacks %}
+            <option value="{{stack.0}}">{{stack.0}}</option>
+          {% endfor %}
+        </select>
+        <h3>pjtimage</h3>
+        {{ pjtimage.as_table }}
       </div>
     </div>
     <button type="button" id="add-pjt-entry">Add PJT Entry</button>
   </fieldset>
-  <h3>pjtimage</h3>
-  {{ pjtimage.as_p }}
+  
   <h3>career</h3>
-  {{ career.as_p }}
+  <fieldset id="career-formset">
+    <legend>CAREER Entries</legend>
+    <div id="career-entries">
+      <div class="career-entry">
+        {{ career.as_table }}
+      </div>
+    </div>
+    <button type="button" id="add-career-entry">Add CAREER Entry</button>
+  </fieldset>
   <input type="submit" value="등록">
 </form>
 
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js" /></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 
 <script>
+  $(document).ready(function() {
+    $("#b_stack_multi").select2();
+  });	
+</script>
+
+<script>
+  $(document).ready(function() {
+    $("#p_stack_multi-0").select2();
+  });	
+</script>
+
+<script>
+  function addLinkField() {
+    const linkEntries = document.getElementById("link-entries");
+    const lastLinkEntry = linkEntries.lastElementChild;
+    const newLinkEntry = document.createElement("div");
+    newLinkEntry.className = "link-entry";
+
+    const newIndex = linkEntries.childElementCount;
+    newLinkEntry.innerHTML = lastLinkEntry.innerHTML.replace(/link-\d+/g, `link-${newIndex}`);
+    linkEntries.appendChild(newLinkEntry);
+  }
+  
+  document.getElementById("add-link-entry").addEventListener("click", addLinkField);
+
   function addPjtField() {
     const pjtEntries = document.getElementById("pjt-entries");
     const lastPjtEntry = pjtEntries.lastElementChild;
     const newPjtEntry = document.createElement("div");
     newPjtEntry.className = "pjt-entry";
-    newPjtEntry.innerHTML = lastPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-${pjtEntries.childElementCount}`);
+
+    const newIndex = pjtEntries.childElementCount;
+    newPjtEntry.innerHTML = lastPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-${newIndex}`);
+    const newIndexSelect = newPjtEntry.querySelector("select");
+    console.log(newIndexSelect)
+    newIndexSelect.id = `p_stack_multi-${newIndex}`;
+    newIndexSelect.name = `p_stack_multi-${newIndex}`;
+    newIndexSelect.dataset.select2Id = `select2-data-p_stack_multi-${newIndex}`;
+    console.log(newIndexSelect)
+
     pjtEntries.appendChild(newPjtEntry);
+
   }
 
   document.getElementById("add-pjt-entry").addEventListener("click", addPjtField);
-</script>
+  
+    function addCareerField() {
+    const careerEntries = document.getElementById("career-entries");
+    const lastCareerEntry = careerEntries.lastElementChild;
+    const newCareerEntry = document.createElement("div");
+    newCareerEntry.className = "career-entry";
+
+    const newIndex = careerEntries.childElementCount;
+    newCareerEntry.innerHTML = lastCareerEntry.innerHTML.replace(/career-\d+/g, `career-${newIndex}`);
+    careerEntries.appendChild(newCareerEntry);
+  }
+
+  document.getElementById("add-career-entry").addEventListener("click", addCareerField);
+</script> 
 {% endblock content %}

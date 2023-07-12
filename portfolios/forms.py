@@ -65,18 +65,9 @@ class BaseForm(forms.ModelForm):
         )
     )
 
-    stack = forms.ChoiceField(
-        choices = TechStack.STACK_CHOICES,
-        widget=forms.Select(
-            attrs={
-                'placeholder': '기술 스택 선택',
-            }
-        )
-    )
-
     class Meta:
         abstract = True
-        fields = ('title', 'username', 'image', 'job', 'phone', 'email', 'introduction', 'stack')
+        fields = ('title', 'username', 'image', 'job', 'phone', 'email', 'introduction')
 
 
 class BasicForm(BaseForm):
@@ -117,24 +108,25 @@ class PjtForm(forms.ModelForm):
         )
     )
 
-    stack = forms.ChoiceField(
-        choices = TechStack.STACK_CHOICES,
-        required=False,
-        widget=forms.Select(
-            attrs={
-                'placeholder': '기술 스택 선택',
-            }
-        )
-    )
+    # stack = forms.ChoiceField(
+    #     choices = TechStack.STACK_CHOICES,
+    #     required=False,
+    #     widget=forms.Select(
+    #         attrs={
+    #             'placeholder': '기술 스택 선택',
+    #         }
+    #     )
+    # )
     class Meta:
         model = Pjts
-        fields = ('name', 'pjts_content', 'role', 'stack')
+        fields = ('name', 'pjts_content', 'role',)
 
 class PjtImageForm(forms.ModelForm):
-    image = forms.ImageField(
+    image = forms.FileField(
         required=False,
         widget=forms.ClearableFileInput(
             attrs={
+                'multiple': True, 
                 'placeholder': '프로젝트 이미지',
             }
         )

@@ -1,10 +1,11 @@
 from django.shortcuts import render, redirect
-from .models import P_templates, Mydatas, Portfolios, Pjts, Pjtimages, Links, Career
+from .models import P_templates, Mydatas, Portfolios, Pjts, Pjtimages, Links, Career, TechStack
 from .forms import BasicForm, PortfolioForm, PjtForm, PjtImageForm, DeletePjtImageForm, LinkForm, CareerForm
 from django.http import JsonResponse
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 
+PjtImageFormSet = formset_factory(PjtImageForm, extra=1)
 
 # Create your views here.
 def index(request):
@@ -38,61 +39,68 @@ def likes(request, title):
     }
     return JsonResponse(context)
 
-# LinkFormSet = formset_factory(LinkForm, extra=1, prefix='link')
-# CareerFormSet = formset_factory(CareerForm, extra=1, prefix='career')
-# PjtFormSet = formset_factory(PjtForm, extra=1, prefix='pjt')
-# PjtImageFormSet = formset_factory(PjtImageForm, extra=1, prefix='pjtimage')
 
 @login_required
 def m_create(request):
     if request.method == 'POST':
         basic = BasicForm(request.POST, request.FILES)
-        pjt = [PjtForm(request.POST, prefix=f'pjt-{i}') for i in range(10)]
-        # pjt = PjtForm(request.POST)
-        if request.FILES.getlist('image'):
-            files = request.FILES.getlist('image')
-        else:
-            files = []
-        career = CareerForm(request.POST)
-        link = LinkForm(request.POST)
+        pjt = [PjtForm(request.POST, prefix=f'pjt-{i}') for i in range(int([k for k in request.POST if k.startswith('pjt-')][-1][4])+1)]
+        career = [CareerForm(request.POST, prefix=f'career-{i}') for i in range(int([k for k in request.POST if k.startswith('career-')][-1][7])+1)]
+        link = [LinkForm(request.POST, prefix=f'link-{i}') for i in range(int([k for k in request.POST if k.startswith('link-')][-1][5])+1)]
+        pjtimage = [PjtImageForm(request.POST, request.FILES, prefix=f'pjt-{i}') for i in range(int([k for k in request.POST if k.startswith('pjt-')][-1][4])+1)]
 
-        if basic.is_valid() and career.is_valid() and link.is_valid():
+        if basic.is_valid():
             my_data = basic.save(commit=False)
             my_data.user = request.user
+            print('basic stack', request.POST.getlist('b_stack_multi'))
             my_data.save()
 
-            for form in pjt:
-                if form.is_valid():
-                    name = form.cleaned_data['name']
+            for i, p_form in enumerate(pjt):
+                if p_form.is_valid():
+                    name = p_form.cleaned_data['name']
+                    # pjt 저장
                     if name:
-                        my_pjt = form.save(commit=False)
+                        my_pjt = p_form.save(commit=False)
                         my_pjt.mydata = my_data
+                        print('pjt stack', request.POST.getlist('p_stack_multi'))
                         my_pjt.save()
-                    else:
-                        break
+                    
+                        # 다중이미지 저장
+                        if pjtimage[i].is_valid():
+                            images = request.FILES.getlist(f'pjt-{i}-image')
+                            if images:
+                                for image in images:
+                                    Pjtimages.objects.create(image=image, pjt=my_pjt)
+                        
+                        # 기술 스택 저장
+                        # print(p_form.cleaned_data['stack'])
 
-                    if files:
-                        for i in files:
-                            Pjtimages.objects.create(image=i, pjt=my_pjt)
+            for c_form in career:
+                if c_form.is_valid():
+                    name = c_form.cleaned_data['career_content']
+                    if name:
+                        my_career = c_form.save(commit=False)
+                        my_career.mydata = my_data
+                        my_career.save()
 
-            my_career = career.save(commit=False)
-            my_career.mydata = my_data
-            my_career.save()
+            for l_form in link:
+                if l_form.is_valid():
+                    name = l_form.cleaned_data['link_content']
+                    if name:
+                        my_link = l_form.save(commit=False)
+                        my_link.mydata = my_data
+                        my_link.save()
 
-            my_link = link.save(commit=False)
-            my_link.mydata = my_data
-            my_link.save()
-            
             return redirect('accounts:profile', request.user.pk)
     else:
         basic = BasicForm()
-        pjt = [PjtForm(prefix=f'pjt-{i}') for i in range(10)]
-        # pjt = PjtForm(prefix='pjt-0')
-        pjtimage = PjtImageForm()
-        career = CareerForm()
-        link = LinkForm()
+        pjt = PjtForm(prefix='pjt-0')
+        pjtimage = PjtImageForm(prefix='pjt-0')
+        career = CareerForm(prefix='career-0')
+        link = LinkForm(prefix='link-0')
             
     context = {
+        'stacks': TechStack.STACK_CHOICES,
         'basic': basic,
         'pjt': pjt,
         'pjtimage': pjtimage,
