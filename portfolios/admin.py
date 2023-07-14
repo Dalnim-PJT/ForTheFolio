@@ -9,4 +9,8 @@ admin.site.register(Portfolios)
 admin.site.register(Career)
 admin.site.register(Pjts)
 admin.site.register(Pjtimages)
-admin.site.register(Mydatas)
+
+class MydatasAdmin(admin.ModelAdmin):
+    filter_horizontal = ('stack',)
+
+admin.site.register(Mydatas, MydatasAdmin)

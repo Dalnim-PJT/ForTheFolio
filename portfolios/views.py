@@ -52,8 +52,10 @@ def m_create(request):
         if basic.is_valid():
             my_data = basic.save(commit=False)
             my_data.user = request.user
-            print('basic stack', request.POST.getlist('b_stack_multi'))
             my_data.save()
+            b_stacks = request.POST.getlist('b_stack_multi')
+            for b_stack in b_stacks:
+                my_data.stack.add(TechStack.objects.get(stack=b_stack))
 
             for i, p_form in enumerate(pjt):
                 if p_form.is_valid():
@@ -62,8 +64,11 @@ def m_create(request):
                     if name:
                         my_pjt = p_form.save(commit=False)
                         my_pjt.mydata = my_data
-                        print('pjt stack', request.POST.getlist('p_stack_multi'))
                         my_pjt.save()
+
+                        # 기술 스택 저장
+                        for p_stack in request.POST.getlist(f'p_stack_multi-{i}'):
+                            my_pjt.stack.add(TechStack.objects.get(stack=p_stack))
                     
                         # 다중이미지 저장
                         if pjtimage[i].is_valid():
@@ -71,9 +76,6 @@ def m_create(request):
                             if images:
                                 for image in images:
                                     Pjtimages.objects.create(image=image, pjt=my_pjt)
-                        
-                        # 기술 스택 저장
-                        # print(p_form.cleaned_data['stack'])
 
             for c_form in career:
                 if c_form.is_valid():
