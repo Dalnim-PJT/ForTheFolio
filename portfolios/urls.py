@@ -6,6 +6,7 @@ app_name = 'portfolios'
 urlpatterns = [
     # 제공하는 템플릿
     path('', views.index, name='index'),
+    path('check/', views.check, name='check'),
     # path('<str:title>/', views.t_detail, name='t_detail'),
     # path('<str:title>/likes/', views.likes, name='likes'),
     # mydatas

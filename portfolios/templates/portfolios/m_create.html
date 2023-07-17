@@ -2,6 +2,9 @@
 {% load static %}
 {% block title %}MY DATA{% endblock title %}
 
+{% block header %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+{% endblock header %}
 
 {% block content %}
 
@@ -9,6 +12,7 @@
   {% csrf_token %}
   <h3>basic</h3>
   {{ basic.as_p }}
+  <p id="title-error"></p>
   stack
   <select multiple class="select" id="b_stack_multi" name="b_stack_multi" style="width:335px; height:70px;" multiple="multiple">
     {% for stack in stacks %}
@@ -55,11 +59,12 @@
     <button type="button" id="add-career-entry">Add CAREER Entry</button>
   </fieldset>
   
-  <input type="submit" value="등록">
+  <input type="submit" value="등록" id="submit-button">
 </form>
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js" /></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
 <script>
   $(document).ready(function() {
@@ -68,15 +73,52 @@
   $(document).ready(function() {
     $("#p_stack_multi-0").select2();
   });
-
+  $(document).ready(function() {
+    var typingTimer;
+    var doneTypingInterval = 100;
+  
+    checkDuplicatetitle();
+  
+    $('#id_title').on('input', function() {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(checkDuplicatetitle, doneTypingInterval);
+  });
+  
+    function checkDuplicatetitle() {
+      var title = $('#id_title').val();
+  
+      if (!title) {
+        $('#title-error').hide();
+        $('#submit-button').prop('disabled', false);
+        return;
+      }
+  
+        $.ajax({
+            url: '/portfolios/check/',
+            type: 'GET',
+            data: {'title': title},
+            success: function(response) {
+                if (response.duplicate) {
+                    $('#title-error').text('※ 중복된 title입니다.').show();
+                    $('#submit-button').prop('disabled', true); 
+                } else {
+                    $('#title-error').hide();
+                    $('#submit-button').prop('disabled', false);
+                }
+            }
+        });
+    }
+  });
+  
   function addLinkField() {
     const linkEntries = document.getElementById("link-entries");
     const firstLinkEntry = linkEntries.firstElementChild;
+
     const newLinkEntry = document.createElement("div");
     newLinkEntry.className = "link-entry";
-
     const newIndex = linkEntries.childElementCount;
     newLinkEntry.innerHTML = firstLinkEntry.innerHTML.replace(/link-\d+/g, `link-${newIndex}`);
+
     const closeButton = document.createElement("button");
     closeButton.innerHTML = "&#10006;";
     newLinkEntry.appendChild(closeButton);
@@ -135,22 +177,36 @@
   }
 
   document.getElementById("add-pjt-entry").addEventListener("click", addPjtField);
+  document.getElementById("pjt-entries").addEventListener("click", function(event) {
+    if (event.target.tagName === "BUTTON") {
+      const pjtEntry = event.target.parentNode;
+      pjtEntry.remove();
+    }
+  });
   
   function addCareerField() {
     const careerEntries = document.getElementById("career-entries");
-    const lastCareerEntry = careerEntries.firstElementChild;
+    const firstCareerEntry = careerEntries.firstElementChild;
     const newCareerEntry = document.createElement("div");
     newCareerEntry.className = "career-entry";
 
     const newIndex = careerEntries.childElementCount;
-    newCareerEntry.innerHTML = lastCareerEntry.innerHTML.replace(/career-\d+/g, `career-${newIndex}`);
-    const c_closeButton = document.createElement("button");
+    newCareerEntry.innerHTML = firstCareerEntry.innerHTML.replace(/career-\d+/g, `career-${newIndex}`);
+    const closeButton = document.createElement("button");
     closeButton.innerHTML = "&#10006;";
-    newCareerEntry.appendChild(c_closeButton);
+    newCareerEntry.appendChild(closeButton);
     
     careerEntries.appendChild(newCareerEntry);
   }
 
   document.getElementById("add-career-entry").addEventListener("click", addCareerField);
+  document.getElementById("career-entries").addEventListener("click", function(event) {
+    if (event.target.tagName === "BUTTON") {
+      const careerEntry = event.target.parentNode;
+      careerEntry.remove();
+    }
+  });
+
+  
 </script> 
 {% endblock content %}
