@@ -2,23 +2,53 @@
 {% load static %}
 {% block title %}MY DATA update{% endblock title %}
 
-
 {% block content %}
-
 <form action="{% url 'portfolios:m_update' my_data.title %}" method='POST' enctype='multipart/form-data'>
 {% csrf_token %}
   <h3>basic</h3>
   {{ basic.as_p }}
+  <select multiple class="select" id="b_stack_multi" name="b_stack_multi" style="width:335px; height:70px;" multiple="multiple">
+    {% for stack in stacks %}
+      <option value="{{stack.0}}" {% if stack.0 in my_data_stacks %}selected{% endif %}>{{stack.0}}</option>
+    {% endfor %}
+  </select>
   <h3>link</h3>
-  {{ link.as_p }}
-  <h3>pjt</h3>
-  {% for pjt1 in pjt %}
-    {{ pjt1.as_p }}
+  {% for link in links %}
+    {{ link.as_table }}
   {% endfor %}
-  <h3>pjtimage</h3>
-  {{ pjtimage.as_p }}
+  <h3>pjt</h3>
+  {% for pjt in pjts %}
+    <div>
+      {% for pjtform in pjt.0 %}
+        {{ pjtform }}
+      {% endfor %}
+      {{ pjt.1 }}
+      {{ pjt.2 }}
+      <select multiple class="select" id="p_stack_multi-{{ forloop.counter0 }}" name="p_stack_multi-{{ forloop.counter0 }}" style="width:335px; height:70px;" multiple="multiple">
+        {% for stack in stacks %}
+          <option value="{{stack.0}}" {% if stack.0 in pjt.3 %}selected{% endif %}>{{stack.0}}</option>
+        {% endfor %}
+      </select>
+    </div>
+  {% endfor %}
   <h3>career</h3>
-  {{ career.as_p }}
+  {% for career in careers %}
+    {{ career.as_table }}
+  {% endfor %}
   <input type="submit" value="등록">
 </form>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js" /></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+  $(document).ready(function() {
+    $("#b_stack_multi").select2();
+  });	
+  $(document).ready(function() {
+    $('[id^="p_stack_multi-"]').select2();
+  });
+
+</script>
 {% endblock content %}

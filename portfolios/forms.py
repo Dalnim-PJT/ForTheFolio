@@ -1,5 +1,6 @@
 from django import forms
 from .models import TechStack, P_templates, Portfolios, Career, Pjts, Pjtimages, Mydatas, Links
+from accounts.models import User
 from imagekit.forms import ProcessedImageField
 from imagekit.processors import ResizeToFill
 import os
@@ -73,6 +74,18 @@ class BaseForm(forms.ModelForm):
 class BasicForm(BaseForm):
     class Meta(BaseForm.Meta):
         model = Mydatas
+    
+    # def __init__(self, *args, **kwargs):
+    #     self.user = kwargs.pop('user', None)
+    #     super().__init__(*args, **kwargs)
+    
+    # def clean_title(self):
+    #     title = self.cleaned_data['title']
+    #     if Mydatas.objects.filter(title=title, user=User.objects.get(email=self.user)).exists():
+    #         # self.add_error('title', '중복된 title이 존재합니다.')
+    #         raise forms.ValidationError('중복된 title 이 존재합니다.')
+        
+    #     return title
 
 
 class PortfolioForm(BaseForm):
@@ -107,16 +120,7 @@ class PjtForm(forms.ModelForm):
             }
         )
     )
-
-    # stack = forms.ChoiceField(
-    #     choices = TechStack.STACK_CHOICES,
-    #     required=False,
-    #     widget=forms.Select(
-    #         attrs={
-    #             'placeholder': '기술 스택 선택',
-    #         }
-    #     )
-    # )
+    
     class Meta:
         model = Pjts
         fields = ('name', 'pjts_content', 'role',)

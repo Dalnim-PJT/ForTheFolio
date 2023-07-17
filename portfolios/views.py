@@ -2,6 +2,7 @@ from django.shortcuts import render, redirect
 from .models import P_templates, Mydatas, Portfolios, Pjts, Pjtimages, Links, Career, TechStack
 from .forms import BasicForm, PortfolioForm, PjtForm, PjtImageForm, DeletePjtImageForm, LinkForm, CareerForm
 from django.http import JsonResponse
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.forms import formset_factory
 
@@ -50,6 +51,12 @@ def m_create(request):
         pjtimage = [PjtImageForm(request.POST, request.FILES, prefix=f'pjt-{i}') for i in range(int([k for k in request.POST if k.startswith('pjt-')][-1][4])+1)]
 
         if basic.is_valid():
+            title = basic.cleaned_data.get('title')
+            if Mydatas.objects.filter(title=title, user=request.user).exists():
+                message = '이미 생성된 정보입니다.'
+                messages.error(request, message)
+                return redirect('accounts:profile', request.user.pk)
+            
             my_data = basic.save(commit=False)
             my_data.user = request.user
             my_data.save()
@@ -75,8 +82,8 @@ def m_create(request):
                             images = request.FILES.getlist(f'pjt-{i}-image')
                             if images:
                                 for image in images:
-                                    Pjtimages.objects.create(image=image, pjt=my_pjt)
-
+                                    Pjtimages.objects.create(image=image, mydata=my_data, pjt=my_pjt)
+    
             for c_form in career:
                 if c_form.is_valid():
                     name = c_form.cleaned_data['career_content']
@@ -100,7 +107,7 @@ def m_create(request):
         pjtimage = PjtImageForm(prefix='pjt-0')
         career = CareerForm(prefix='career-0')
         link = LinkForm(prefix='link-0')
-            
+        
     context = {
         'stacks': TechStack.STACK_CHOICES,
         'basic': basic,
@@ -112,12 +119,22 @@ def m_create(request):
     return render(request, 'portfolios/m_create.html', context)
 
 
+def check(request):
+    title = request.GET.get('title')
+    if Mydatas.objects.filter(title=title, user=request.user).exists():
+        response_data = {'duplicate': True}
+    else:
+        response_data = {'duplicate': False}
+    return JsonResponse(response_data)
+
+
 @login_required
 def m_update(request, mydata_title):
     my_data = Mydatas.objects.get(title=mydata_title)
-    my_pjt = Pjts.objects.filter(mydata=my_data)
-    my_career = Career.objects.filter(mydata=my_data).first()
-    my_link = Links.objects.filter(mydata=my_data).first()
+    my_data_stacks = [stack.stack for stack in my_data.stack.all()]
+    my_pjts = Pjts.objects.filter(mydata=my_data)
+    my_careers = Career.objects.filter(mydata=my_data)
+    my_links = Links.objects.filter(mydata=my_data)
     if request.method == 'POST':
         basic = BasicForm(request.POST, request.FILES, instance=my_data)
         pjt = PjtForm(request.POST)
@@ -155,24 +172,24 @@ def m_update(request, mydata_title):
             return redirect('accounts:profile', request.user.pk)
     else:
         basic = BasicForm(instance=my_data)
-        pjt = [PjtForm(prefix=str(pjt.id), instance=pjt) for pjt in my_pjt]
-        career = CareerForm(instance=my_career)
-        link = LinkForm(instance=my_link)
-        # delete = DeletePjtImageForm(pjt=pjt)
-    
-    if my_pjt.first().pjtimages_set.exists():
-        pjtimage = PjtImageForm(instance=my_pjt.first().pjtimages_set.first())
-    else:
-        pjtimage = PjtImageForm()
-    
+        pjts = [[PjtForm(prefix=str(pjt.id), instance=pjt), PjtImageForm(prefix=str(pjt.id)), DeletePjtImageForm(prefix=str(pjt.id),pjt=pjt), [stack.stack for stack in pjt.stack.all()]] for pjt in my_pjts]
+        if not pjts:
+            pjts = [PjtForm(prefix='link-0')]
+        careers = [CareerForm(prefix=str(career.id), instance=career) for career in my_careers]
+        if not careers:
+            careers = [CareerForm(prefix='link-0')]
+        links = [LinkForm(prefix=str(link.id), instance=link) for link in my_links]
+        if not links:
+            links = [LinkForm(prefix='link-0')]
+
     context = {
+        'stacks': TechStack.STACK_CHOICES,
         'my_data': my_data,
         'basic': basic,
-        'pjt': pjt,
-        'pjtimage': pjtimage,
-        'career': career,
-        'link': link,
-        # 'delete':delete,
+        'pjts': pjts,
+        'careers': careers,
+        'links': links,
+        'my_data_stacks' : my_data_stacks,
     }
     return render(request, 'portfolios/m_update.html', context)
 
