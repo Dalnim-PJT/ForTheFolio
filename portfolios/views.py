@@ -121,8 +121,13 @@ def m_create(request):
 
 def check(request):
     title = request.GET.get('title')
+    pk = request.GET.get('origin_title')
+
     if Mydatas.objects.filter(title=title, user=request.user).exists():
-        response_data = {'duplicate': True}
+        if Mydatas.objects.filter(title=title, pk=pk).exists():
+            response_data = {'duplicate': False}
+        else:
+            response_data = {'duplicate': True}
     else:
         response_data = {'duplicate': False}
     return JsonResponse(response_data)
@@ -138,37 +143,61 @@ def m_update(request, mydata_title):
     if request.method == 'POST':
         basic = BasicForm(request.POST, request.FILES, instance=my_data)
         pjt = PjtForm(request.POST)
-        delete_ids = request.POST.getlist('delete_images')
-        delete = DeletePjtImageForm(pjt=pjt, data=request.POST)
-        if request.FILES.getlist('image'):
-            files = request.FILES.getlist('image')
-        else:
-            files = []
+        link = [LinkForm(request.POST, prefix=f'link-{i}') for i in [k.split('-')[1] for k in request.POST if k.endswith('link_content')]]
+        print("링크", link)
+        print('asdasdasd', [k.split('-')[1] for k in request.POST if k.endswith('link_content')])
+        # delete_ids = request.POST.getlist('delete_images')
+        # delete = DeletePjtImageForm(pjt=pjt, data=request.POST)
+        # if request.FILES.getlist('image'):
+        #     files = request.FILES.getlist('image')
+        # else:
+        #     files = []
         
         career = CareerForm(request.POST)
-        link = LinkForm(request.POST)
-        
-        if basic.is_valid() and pjt.is_valid() and career.is_valid() and link.is_valid() and delete.ids:
+        # link = LinkForm(request.POST)
+        if basic.is_valid():
             my_data = basic.save(commit=False)
             my_data.user = request.user
             my_data.save()
 
-            my_pjt = pjt.save(commit=False)
-            my_pjt.mydata = my_data
-            my_pjt.save()
-            my_pjt.pjtimages_set.filter(pk__in=delete_ids).delete()
-            if files:
-                for i in files:
-                    Pjtimages.objects.create(image=i, pjt=my_pjt)
+            # my_pjt = pjt.save(commit=False)
+            # my_pjt.mydata = my_data
+            # my_pjt.save()
+            # # my_pjt.pjtimages_set.filter(pk__in=delete_ids).delete()
+            # if files:
+            #     for i in files:
+            #         Pjtimages.objects.create(image=i, pjt=my_pjt)
 
-            my_career = career.save(commit=False)
-            my_career.mydata = my_data
-            my_career.save()
+            # my_career = career.save(commit=False)
+            # my_career.mydata = my_data
+            # my_career.save()
 
-            my_link = link.save(commit=False)
-            my_link.mydata = my_data
-            my_link.save()
-            
+            # for l_form in link:
+            #     if l_form.is_valid():
+            #         print(l_form)
+            #         name = l_form.cleaned_data['link_content']
+            #         print(name)
+            #         if name:
+            #             my_link = l_form.save(commit=False)
+            #             my_link.mydata = my_data
+            #             my_link.save()
+
+            for l_form in link:
+                if l_form.is_valid():
+                    if l_form.cleaned_data['link_content']:
+                        print(1)
+                        # Handle modification of existing value
+                        link_instance = l_form.save(commit=False)
+                        existing_link = Links.objects.get(id=l_form.cleaned_data['id'])
+                        existing_link.link_content = link_instance.link_content
+                        existing_link.save()
+                    else:
+                        print(2)
+                        # Handle new addition
+                        # my_link = l_form.save(commit=False)
+                        # my_link.mydata = my_data
+                        # my_link.save()
+
             return redirect('accounts:profile', request.user.pk)
     else:
         basic = BasicForm(instance=my_data)
@@ -178,7 +207,7 @@ def m_update(request, mydata_title):
         careers = [CareerForm(prefix=str(career.id), instance=career) for career in my_careers]
         if not careers:
             careers = [CareerForm(prefix='link-0')]
-        links = [LinkForm(prefix=str(link.id), instance=link) for link in my_links]
+        links = [LinkForm(prefix=f'link-{str(link.id)}', instance=link) for link in my_links]
         if not links:
             links = [LinkForm(prefix='link-0')]
 
