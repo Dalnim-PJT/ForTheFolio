@@ -7,15 +7,30 @@
 {% csrf_token %}
   <h3>basic</h3>
   {{ basic.as_p }}
+  <input type="hidden" id="origin_title" name="origin_title" value="{{ my_data.pk }}">
+  <p id="title-error"></p>
   <select multiple class="select" id="b_stack_multi" name="b_stack_multi" style="width:335px; height:70px;" multiple="multiple">
     {% for stack in stacks %}
       <option value="{{stack.0}}" {% if stack.0 in my_data_stacks %}selected{% endif %}>{{stack.0}}</option>
     {% endfor %}
   </select>
   <h3>link</h3>
-  {% for link in links %}
-    {{ link.as_table }}
-  {% endfor %}
+  <div id="link-entries">
+    {% for link in links %}
+      <div class="link-entry">
+        {{ link.as_p }}
+        {% if link.link_content.value %}
+          <button>&#10006;</button>
+        {% endif %}
+      </div>
+    {% endfor %}
+    {% if links.link_content.value == "" %}
+      <div class="link-entry">
+        {{ links.as_table }}
+      </div>
+    {% endif %}
+  </div>
+  <button type="button" id="add-link-entry">Add LINK Entry</button>
   <h3>pjt</h3>
   {% for pjt in pjts %}
     <div>
@@ -35,7 +50,7 @@
   {% for career in careers %}
     {{ career.as_table }}
   {% endfor %}
-  <input type="submit" value="등록">
+  <input type="submit" value="등록" id="submit-button">
 </form>
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
@@ -49,6 +64,73 @@
   $(document).ready(function() {
     $('[id^="p_stack_multi-"]').select2();
   });
+  $(document).ready(function() {
+    var typingTimer;
+    var doneTypingInterval = 100;
+  
+    checkDuplicatetitle();
+  
+    $('#id_title').on('input', function() {
+      clearTimeout(typingTimer);
+      typingTimer = setTimeout(checkDuplicatetitle, doneTypingInterval);
+  });
+  
+    function checkDuplicatetitle() {
+      var title = $('#id_title').val();
+      var origin = $('#origin_title').val();
+  
+      if (!title) {
+        $('#title-error').hide();
+        $('#submit-button').prop('disabled', false);
+        return;
+      }
+        $.ajax({
+          url: '/portfolios/check/',
+          type: 'GET',
+          data: {'title': title, 'origin_title': origin},
+          success: function(response) {
+            if (response.duplicate) {
+              $('#title-error').text('※ 중복된 title입니다.').show();
+              $('#submit-button').prop('disabled', true); 
+            } else {
+              $('#title-error').hide();
+              $('#submit-button').prop('disabled', false);
+            }
+          }
+        });
+    }
+  });
+  
+  function addLinkField() {
+    const linkEntries = document.getElementById("link-entries");
+    const firstLinkEntry = linkEntries.firstElementChild;
 
+    const newLinkEntry = document.createElement("div");
+    newLinkEntry.className = "link-entry";
+    const newIndex = linkEntries.childElementCount;
+    newLinkEntry.innerHTML = firstLinkEntry.innerHTML.replace(/link-\d+/g, `link-${newIndex}`);
+    const formInputs = newLinkEntry.getElementsByTagName("input");
+    for (let i = 0; i < formInputs.length; i++) {
+      formInputs[i].value = "";
+    }
+
+    const existingCloseButton = newLinkEntry.querySelector("button");
+    if (existingCloseButton) {existingCloseButton.remove()};
+      
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "&#10006;";
+    newLinkEntry.appendChild(closeButton);
+
+    linkEntries.appendChild(newLinkEntry);
+  }
+  
+  document.getElementById("add-link-entry").addEventListener("click", addLinkField);
+  document.getElementById("link-entries").addEventListener("click", function(event) {
+    if (event.target.tagName === "BUTTON") {
+      const linkEntry = event.target.parentNode;
+      linkEntry.remove();
+    }
+  });
+  
 </script>
 {% endblock content %}

@@ -14,6 +14,7 @@
       {{ md.user }}
       {{ md.title }}
       {{ md.content }}
+      <a href="{% url 'portfolios:m_update' md.title %}">update</a>
     </div>
   {% endfor %}
 </article>
