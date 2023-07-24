@@ -19,9 +19,9 @@
     {% for link in links %}
       <div class="link-entry">
         {{ link.as_p }}
-        {% if link.link_content.value %}
+        {% comment %} {% if link.link_content.value %} {% endcomment %}
           <button>&#10006;</button>
-        {% endif %}
+        {% comment %} {% endif %} {% endcomment %}
       </div>
     {% endfor %}
     {% if links.link_content.value == "" %}
@@ -32,24 +32,36 @@
   </div>
   <button type="button" id="add-link-entry">Add LINK Entry</button>
   <h3>pjt</h3>
-  {% for pjt in pjts %}
-    <div>
-      {% for pjtform in pjt.0 %}
-        {{ pjtform }}
-      {% endfor %}
-      {{ pjt.1 }}
-      {{ pjt.2 }}
-      <select multiple class="select" id="p_stack_multi-{{ forloop.counter0 }}" name="p_stack_multi-{{ forloop.counter0 }}" style="width:335px; height:70px;" multiple="multiple">
-        {% for stack in stacks %}
-          <option value="{{stack.0}}" {% if stack.0 in pjt.3 %}selected{% endif %}>{{stack.0}}</option>
+  <div id="pjt-entries">
+    {% for pjt in pjts %}
+      <div class="pjt-entry">
+        {% for pjtform in pjt.0 %}
+          {{ pjtform }}
         {% endfor %}
-      </select>
-    </div>
-  {% endfor %}
+        {{ pjt.1 }}
+        <div id="delete-image">
+          {{ pjt.2 }}
+        </div>
+        <select multiple class="select" id="p_stack_multi-{{ forloop.counter0 }}" name="p_stack_multi-{{ forloop.counter0 }}" style="width:335px; height:70px;" multiple="multiple">
+          {% for stack in stacks %}
+            <option value="{{stack.0}}" {% if stack.0 in pjt.3 %}selected{% endif %}>{{stack.0}}</option>
+          {% endfor %}
+        </select>
+        <button>&#10006;</button>
+      </div>
+    {% endfor %}
+  </div>
+  <button type="button" id="add-pjt-entry">Add PJT Entry</button>
   <h3>career</h3>
-  {% for career in careers %}
-    {{ career.as_table }}
-  {% endfor %}
+  <div id="career-entries">
+    {% for career in careers %}
+      <div class="career-entry">
+        {{ career.as_table }}
+        <button>&#10006;</button>
+      </div>
+    {% endfor %}
+  </div>
+  <button type="button" id="add-career-entry">Add CAREER Entry</button>
   <input type="submit" value="등록" id="submit-button">
 </form>
 
@@ -131,6 +143,101 @@
       linkEntry.remove();
     }
   });
+
+  function addPjtField() {
+    const pjtEntries = document.getElementById("pjt-entries");
+    const firstPjtEntry = pjtEntries.firstElementChild;
+
+    const newPjtEntry = document.createElement("div");
+    newPjtEntry.className = "pjt-entry";
+    const newIndex = pjtEntries.childElementCount;
+    newPjtEntry.innerHTML = firstPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-${newIndex}`);
+
+
+    newPjtEntry.querySelector('.select').remove();
+    newPjtEntry.querySelector('.select2').remove();
+    newPjtEntry.querySelector('#delete-image').remove();
+    
+
+    const stacks = {{stacks|safe}};
+
+    const selectElement = document.createElement('select');
+    selectElement.multiple = true;
+    selectElement.setAttribute('class', 'select select2-hidden-accessible');
+    selectElement.setAttribute('id', `p_stack_multi-${newIndex}`);
+    selectElement.setAttribute('name', `p_stack_multi-${newIndex}`);
+    selectElement.style.width = '335px';
+    selectElement.style.height = '70px';
+    selectElement.setAttribute("data-select2-id", `p_stack_multi-${newIndex}`);
+
+    stacks.forEach((stack) => {
+      const optionElement = document.createElement('option');
+      optionElement.setAttribute('value', stack);
+      optionElement.textContent = stack;
+      selectElement.appendChild(optionElement);
+    });
+
+    const formInputs = newPjtEntry.getElementsByTagName("input");
+    const formTexts = newPjtEntry.getElementsByTagName("textarea");
+    for (let i = 0; i < formInputs.length; i++) {
+      formInputs[i].value = "";
+    }
+    for (let i = 0; i < formTexts.length; i++) {
+      formTexts[i].value = "";
+    }
+
+    const existingCloseButton2 = newPjtEntry.querySelector("button");
+    if (existingCloseButton2) {existingCloseButton2.remove()};
+      
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "&#10006;";
+    newPjtEntry.appendChild(closeButton);
+    
+    newPjtEntry.appendChild(selectElement);
+    pjtEntries.appendChild(newPjtEntry);
+
+    $(`#p_stack_multi-${newIndex}`).select2();
+  }
+  
+  document.getElementById("add-pjt-entry").addEventListener("click", addPjtField);
+  document.getElementById("pjt-entries").addEventListener("click", function(event) {
+    if (event.target.tagName === "BUTTON") {
+      const pjtEntry = event.target.parentNode;
+      pjtEntry.remove();
+    }
+  });
+
+  function addCareerField() {
+    const careerEntries = document.getElementById("career-entries");
+    const firstCareerEntry = careerEntries.firstElementChild;
+
+    const newCareerEntry = document.createElement("div");
+    newCareerEntry.className = "career-entry";
+    const newIndex = careerEntries.childElementCount;
+    newCareerEntry.innerHTML = firstCareerEntry.innerHTML.replace(/career-\d+/g, `career-${newIndex}`);
+    const formInputs = newCareerEntry.getElementsByTagName("input");
+    for (let i = 0; i < formInputs.length; i++) {
+      formInputs[i].value = "";
+    }
+
+    const existingCloseButton3 = newCareerEntry.querySelector("button");
+    if (existingCloseButton3) {existingCloseButton3.remove()};
+      
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "&#10006;";
+    newCareerEntry.appendChild(closeButton);
+
+    careerEntries.appendChild(newCareerEntry);
+  }
+  
+  document.getElementById("add-career-entry").addEventListener("click", addCareerField);
+  document.getElementById("career-entries").addEventListener("click", function(event) {
+    if (event.target.tagName === "BUTTON") {
+      const careerEntry = event.target.parentNode;
+      careerEntry.remove();
+    }
+  });
+  
   
 </script>
 {% endblock content %}
