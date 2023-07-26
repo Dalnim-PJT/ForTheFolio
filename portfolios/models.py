@@ -62,12 +62,12 @@ class TechStack(models.Model):
 # 제공하는 템플릿 모델
 class P_templates(models.Model):
     title = models.CharField(max_length=50)
-    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_templates')
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_templates', blank=True, null=True)
 
     def __str__(self):
         return self.title
 
-
+# 삭제예정
 # 제공하는 템플릿 모델에 사용되는 예시 유저 정보
 class P_exampleuser(models.Model):
     username = models.CharField(max_length=50)
@@ -137,6 +137,8 @@ class Pjts(BaseInfo):
     pjts_content = models.TextField()
     role = models.TextField()
     stack = models.ManyToManyField(TechStack, related_name="pjt_stacks")
+    github = models.URLField(blank=True, null=True)
+    web = models.URLField(blank=True, null=True)
 
 
 class Pjtimages(BaseInfo):
