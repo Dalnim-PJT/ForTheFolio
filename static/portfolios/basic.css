@@ -1,0 +1,32 @@
+.pjt--header {
+  position: fixed;
+  display: grid;
+  grid-template-columns: 150px 1fr;
+  width: 100%;
+  padding: 1rem;
+}
+.pjt--header__nav {
+  display: flex;
+  justify-content: space-evenly;
+}
+.pjt--article {
+  height: 100vh;
+  padding-top: 100px;
+  margin: 0 10rem;
+}
+.aboutme--list {
+
+}
+.aboutme__section1{
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+}
+.aboutme__userdata--wrap {
+}
+.aboutme__userimage--wrap{
+}
+.aboutme__section2 {
+  display: flex;
+  justify-content: center;
+}

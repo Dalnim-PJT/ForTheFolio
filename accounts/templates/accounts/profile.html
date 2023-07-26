@@ -15,6 +15,7 @@
       {{ md.title }}
       {{ md.content }}
       <a href="{% url 'portfolios:m_update' md.title %}">update</a>
+      <a href="{% url 'portfolios:m_delete' md.title %}" onclick="return confirm('삭제하시겠습니까?')">delete</a>
     </div>
   {% endfor %}
 </article>

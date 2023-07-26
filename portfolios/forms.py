@@ -120,10 +120,30 @@ class PjtForm(forms.ModelForm):
             }
         )
     )
+
+    github = forms.URLField(
+        required=False,
+        validators=[URLValidator()],
+        widget=forms.URLInput(
+            attrs={
+                'placeholder': 'github url',
+            }
+        )
+    )
+
+    web = forms.URLField(
+        required=False,
+        validators=[URLValidator()],
+        widget=forms.URLInput(
+            attrs={
+                'placeholder': 'web url',
+            }
+        )
+    )
     
     class Meta:
         model = Pjts
-        fields = ('name', 'pjts_content', 'role',)
+        fields = ('name', 'pjts_content', 'role', 'github', 'web',)
 
 class PjtImageForm(forms.ModelForm):
     image = forms.FileField(
