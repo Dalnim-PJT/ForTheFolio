@@ -135,122 +135,77 @@ def check(request):
 
 @login_required
 def m_update(request, mydata_title):
-    my_data = Mydatas.objects.get(title=mydata_title)
+    my_data = Mydatas.objects.get(title=mydata_title, user_id=request.user.id)
     my_data_stacks = [stack.stack for stack in my_data.stack.all()]
     my_pjts = Pjts.objects.filter(mydata=my_data)
-    my_careers = Career.objects.filter(mydata=my_data)
-    my_links = Links.objects.filter(mydata=my_data)
+    my_careers = list(Career.objects.filter(mydata=my_data))
+    my_links = list(Links.objects.filter(mydata=my_data))
 
     if request.method == 'POST':
         basic = BasicForm(request.POST, request.FILES, instance=my_data)
         update_pjt_ids = [k.split('-')[1] for k in request.POST if k.startswith('pjt-') and k.endswith('name')]
-        update_pjts = []
-        my_pjts_id = [ my_pjt.id for my_pjt in my_pjts ]
-        for my_pjt_id in my_pjts_id:
+        # Delete pjts
+        for my_pjt_id in [my_pjt.id for my_pjt in my_pjts]:
             if str(my_pjt_id) not in update_pjt_ids:
                 Pjts.objects.get(id=my_pjt_id).delete()
-        for pjt_id in update_pjt_ids:
-            pjt_instance = None
-            try:
-                pjt_instance = Pjts.objects.get(pk=pjt_id)
-            except Pjts.DoesNotExist:
-                pass
-            if pjt_instance:
-                pjt_form = PjtForm(request.POST, prefix=f'pjt-{pjt_id}', instance=pjt_instance)
-                pjt_image_form = PjtImageForm(request.POST, request.FILES, prefix=f'pjt-{pjt_id}')
-                pjt_image_delete_form = DeletePjtImageForm(prefix=f'delete-pjt-{pjt_id}', pjt=pjt_instance, data=request.POST) 
-                pjt_stack_form = [stack.stack for stack in pjt_instance.stack.all()]
-            else:
-                pjt_form = PjtForm(request.POST, prefix=f'pjt-{pjt_id}')
-                pjt_image_form = PjtImageForm(request.POST, request.FILES, prefix=f'pjt-{pjt_id}')
-                pjt_image_delete_form = False
-                pjt_stack_form = []
-
-            update_pjts.append([pjt_form, pjt_image_form, pjt_image_delete_form, pjt_stack_form])
-
-
-        update_career_ids = [k.split('-')[1] for k in request.POST if k.startswith('career-') and k.endswith('career_content')]
-        update_careers = []
-        for career_id in update_career_ids:
-            career_instance = None
-            try:
-                career_instance = Career.objects.get(pk=career_id)
-            except Career.DoesNotExist:
-                pass
-
-            if career_instance:
-                career_form = CareerForm(request.POST, prefix=f'career-{career_id}', instance=career_instance)
-            else:
-                career_form = CareerForm(request.POST, prefix=f'career-{career_id}')
-
-            update_careers.append(career_form)
-
-        update_link_ids = [k.split('-')[1] for k in request.POST if k.startswith('link-') and k.endswith('link_content')]
-        update_links = []
-        for link_id in update_link_ids:
-            link_instance = None
-            try:
-                link_instance = Links.objects.get(pk=link_id)
-            except Links.DoesNotExist:
-                pass
-
-            if link_instance:
-                link_form = LinkForm(request.POST, prefix=f'link-{link_id}', instance=link_instance)
-            else:
-                link_form = LinkForm(request.POST, prefix=f'link-{link_id}')
-
-            update_links.append(link_form)
 
         if basic.is_valid():
             # Update basic information
             my_data = basic.save(commit=False)
             my_data.user = request.user
             my_data.save()
+
+            # Update or add stacks
             b_stacks = request.POST.getlist('b_stack_multi')
             for b_stack in b_stacks:
                 my_data.stack.add(TechStack.objects.get(stack=b_stack))
             
+            # Delete stacks
             for my_data_stack in my_data_stacks:
                 if my_data_stack not in b_stacks:
                     my_data.stack.remove(TechStack.objects.get(stack=my_data_stack))
 
             # Update or add projects
-            for i, (p_form, pjt_image_form, delete_pjt_image_form, p_stack_list) in enumerate(update_pjts):
-                if p_form.is_valid():
-                    pjt_instance = p_form.save(commit=False)
+            for i, pjt_id in enumerate(update_pjt_ids):
+                pjt_instance = Pjts.objects.filter(pk=pjt_id).first()
+                pjt_form = PjtForm(request.POST, prefix=f'pjt-{pjt_id}', instance=pjt_instance)
+                pjt_image_form = PjtImageForm(request.POST, request.FILES, prefix=f'pjt-{pjt_id}')
+                pjt_stack_form = [stack.stack for stack in pjt_instance.stack.all()] if pjt_instance else []
+
+                if pjt_form.is_valid():
+                    pjt_instance = pjt_form.save(commit=False)
                     pjt_instance.mydata = my_data
                     pjt_instance.save()
 
+                    # Add stack
                     p_stacks = request.POST.getlist(f'p_stack_multi-{i}')
                     for p_stack in p_stacks:
                         pjt_instance.stack.add(TechStack.objects.get(stack=p_stack))
                     
-                    for my_pjt_stack in p_stack_list:
+                    # Delete stack
+                    for my_pjt_stack in pjt_stack_form:
                         if my_pjt_stack not in p_stacks:
                             pjt_instance.stack.remove(TechStack.objects.get(stack=my_pjt_stack))
                     
-                    # Handle project images
+                    # Add images
                     if pjt_image_form.is_valid():
-                        images = request.FILES.getlist(f'pjt-{pjt_instance.id}-image')
-                        if images:
-                            pass
-                        else:
-                            images = request.FILES.getlist(f'pjt-{i}-image')
+                        images = request.FILES.getlist(f'pjt-{pjt_instance.id}-image') or request.FILES.getlist(f'pjt-{i}-image')
                         for image in images:
                             Pjtimages.objects.create(image=image, mydata=my_data, pjt=pjt_instance)
-
-                    delete_ids = request.POST.getlist('delete_images')
-
-                    # Handle deleted project images
-                    if delete_pjt_image_form:
-                        if delete_pjt_image_form.is_valid():
-                            pjt_instance.pjtimages_set.filter(pk__in=delete_ids).delete()
+                    
+                    # Delete images
+                    pjt_image_delete_form = DeletePjtImageForm(prefix=f'delete-pjt-{pjt_id}', pjt=pjt_instance, data=request.POST)
+                    if pjt_instance and pjt_image_delete_form.is_valid():
+                        pjt_instance.pjtimages_set.filter(pk__in=pjt_image_delete_form.cleaned_data['delete_images']).delete()
 
             # Update or add careers
-            for c_form in update_careers:
+            update_career_ids = [k.split('-')[1] for k in request.POST if k.startswith('career-') and k.endswith('career_content')]
+            for career_id in update_career_ids:
+                c_form = CareerForm(request.POST, prefix=f'career-{career_id}', instance=Career.objects.filter(pk=career_id).first())
                 if c_form.is_valid():
-                    career_instance = c_form.save(commit=False)
-                    if career_instance.career_content:
+                    name = c_form.cleaned_data['career_content']
+                    if name:
+                        career_instance = c_form.save(commit=False)
                         career_instance.mydata = my_data
                         career_instance.save()
             
@@ -260,7 +215,9 @@ def m_update(request, mydata_title):
                     career.delete()
 
             # Update or add links
-            for l_form in update_links:
+            update_link_ids = [k.split('-')[1] for k in request.POST if k.startswith('link-') and k.endswith('link_content')]
+            for link_id in update_link_ids:
+                l_form = LinkForm(request.POST, prefix=f'link-{link_id}', instance=Links.objects.filter(pk=link_id).first())
                 if l_form.is_valid():
                     link_instance = l_form.save(commit=False)
                     if link_instance.link_content:
@@ -281,7 +238,7 @@ def m_update(request, mydata_title):
                 DeletePjtImageForm(prefix=f'delete-pjt-{pjt.id}', pjt=pjt),
                 [stack.stack for stack in pjt.stack.all()]] for pjt in my_pjts]
         if not pjts:
-            pjts = [[PjtForm(prefix='pjt-0'), PjtImageForm(prefix='pjt-0'), DeletePjtImageForm(prefix='pjt-0'), []]]
+            pjts = [[PjtForm(prefix='pjt-0'), PjtImageForm(prefix='pjt-0')]]
         careers = [CareerForm(prefix=f'career-{str(career.id)}', instance=career) for career in my_careers]
         if not careers:
             careers = [CareerForm(prefix='career-0')]
