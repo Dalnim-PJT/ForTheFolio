@@ -4,8 +4,9 @@
 
 {% block content %}
 <article>
+  <h1>{{ user }}님의 프로필 페이지 입니다.</h1>
   <div>
-    <a href="{% url 'accounts:logout' %}">로그아웃</a>
+    <a href="{% url 'accounts:logout' %}" style="font-size: 20px; color:red;">로그아웃</a>
   </div>
 </article>
 <article>
