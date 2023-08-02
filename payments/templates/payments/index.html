@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+
+{% for sub in subscriptions %}
+    {{ sub }}
+{% endfor %}
+
+{% endblock content %}

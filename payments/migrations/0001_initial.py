@@ -8,11 +8,11 @@ from payments.models import Subscription
 def create_subscriptions(apps, schema_editor):
     Subscription = apps.get_model('payments', 'Subscription')
     subscriptions = [
-        {'title': '1MF', 'price': 0,},
-        {'title': '1M', 'price': 1000,},
-        {'title': '3M', 'price': 2500,},
-        {'title': '6M', 'price': 4500,},
-        {'title': '1Y', 'price': 8000,}
+        {'title': '1개월 무료', 'price': 0,},
+        {'title': '1개월', 'price': 1000,},
+        {'title': '3개월', 'price': 2500,},
+        {'title': '6개월', 'price': 4500,},
+        {'title': '1년', 'price': 8000,}
     ]
     for sub in subscriptions:
         Subscription.objects.create(title=sub['title'], price=sub['price'])
