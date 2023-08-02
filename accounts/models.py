@@ -3,7 +3,7 @@ from django.db import models
 from django.contrib.auth.models import AbstractUser
 from imagekit.models import ProcessedImageField
 from imagekit.processors import ResizeToFill
-from payments.models import Payment
+from payments.models import Subscription
 
 # Create your models here.
 class User(AbstractUser):
@@ -12,7 +12,7 @@ class User(AbstractUser):
     def profile_image_path(instance, filename):
         return f'profile/{instance.email}/{filename}'
     image = ProcessedImageField(upload_to=profile_image_path, blank=True, null=True, processors=[ResizeToFill(100,100)])
-    # pay_status = models.OneToOneField(Payment, on_delete=models.CASCADE, related_name="user_pay_status", default=False)
+    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE, null=True, blank=True)
 
     USERNAME_FIELD = 'email'
     REQUIRED_FIELDS = []
