@@ -8,7 +8,7 @@ class CustomUserCreationForm(UserCreationForm):
         label = '이메일',
         widget = forms.EmailInput(
             attrs = {
-                'class': 'form-control',
+                'class': 'form--control',
                 'placeholder': '이메일',
             }
         )
@@ -26,7 +26,7 @@ class CustomUserCreationForm(UserCreationForm):
         label = '비밀번호',
         widget = forms.PasswordInput(
             attrs = {
-                'class': 'form-control',
+                'class': 'form--control',
                 'placeholder': '비밀번호',
             }
         ),
@@ -36,7 +36,7 @@ class CustomUserCreationForm(UserCreationForm):
         label = '비밀번호 확인',
         widget = forms.PasswordInput(
             attrs = {
-                'class': 'form-control',
+                'class': 'form--control',
                 'placeholder': '비밀번호 확인',
             }
         ),
@@ -50,10 +50,10 @@ class CustomUserCreationForm(UserCreationForm):
 class CustomAuthenticationForm(AuthenticationForm):
     # username = forms.CharField(required=False)
     username = forms.EmailField(
-        label = False,
+        label = 'False',
         widget = forms.EmailInput(
             attrs = {
-                'class': 'form-control',
+                'class': 'form--control',
                 'placeholder': '이메일',
             }
         )
@@ -63,7 +63,7 @@ class CustomAuthenticationForm(AuthenticationForm):
         label = False,
         widget = forms.PasswordInput(
             attrs = {
-                'class':'form-control',
+                'class':'form--control',
                 'placeholder': '비밀번호',
             }
         ),
@@ -79,7 +79,7 @@ class CustomUserChangeForm(UserChangeForm):
         label = False,
         widget = forms.EmailInput(
             attrs = {
-                'class': 'form-control',
+                'class': 'form--control',
                 'placeholder': '이메일',
             }
         )
@@ -95,8 +95,8 @@ class CustomPasswordChangeForm(PasswordChangeForm):
         model = get_user_model()
         fields = ('old_password', 'new_password1', 'new_password2',)
     old_password = forms.CharField(label=False, label_suffix='', widget=forms.PasswordInput(
-        attrs={'class': 'signup--form','placeholder' : '기존 비밀번호'}))
+        attrs={'class': 'form--control','placeholder' : '기존 비밀번호'}))
     new_password1 = forms.CharField(label=False, label_suffix='', widget=forms.PasswordInput(
-        attrs={'class': 'signup--form','placeholder' : '새 비밀번호'}))
+        attrs={'class': 'form--control','placeholder' : '새 비밀번호'}))
     new_password2 = forms.CharField(label=False, label_suffix='', widget=forms.PasswordInput(
-        attrs={'class': 'signup--form','placeholder' : '새 비밀번호 확인'}))
+        attrs={'class': 'form--control','placeholder' : '새 비밀번호 확인'}))

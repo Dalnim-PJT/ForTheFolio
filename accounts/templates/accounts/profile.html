@@ -34,12 +34,10 @@
   flex-direction: column;
   gap: 1rem;
 }
-.mydata--create {
-  color: #fff;
-  border-radius: 30px;
-  background-color: #1C77FF;
-  padding: 0.5rem 1rem;
-}
+
+
+
+
 {% endblock style %}
 
 {% block content %}
@@ -80,7 +78,7 @@
       </p>
     </div>
     <div class="">
-      <a class="mydata--create" href="{% url 'portfolios:m_create' %}">포트폴리오 만들기 ></a>
+      <a class="blue--button-bgc" href="{% url 'portfolios:m_create' %}">포트폴리오 만들기 ></a>
     </div>
   </section>
 </article>

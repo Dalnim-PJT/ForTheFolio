@@ -111,6 +111,8 @@ def change_password(request):
         form = CustomPasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
+
+            
             update_session_auth_hash(request, user)
             return JsonResponse({"status": "success", "message": "암호가 성공적으로 변경되었습니다."}, status=200)
         else:
