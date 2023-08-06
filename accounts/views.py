@@ -89,27 +89,63 @@ def update(request):
     return render(request, 'accounts/update.html', context)
 
 
+# @login_required
+# def change_password(request):
+#     if request.method == 'POST':
+#         form = CustomPasswordChangeForm(request.user, request.POST)
+#         if form.is_valid():
+#             user = form.save()
+#             update_session_auth_hash(request, user)
+#             return redirect('main')
+#     else:
+#         form = CustomPasswordChangeForm(request.user)
+#     context = {
+#         'form': form,
+#     }
+#     return render(request, 'accounts/change_password.html', context)
+
+
 @login_required
 def change_password(request):
-    if request.method == 'POST':
+    if request.is_ajax() and request.method == "POST":
         form = CustomPasswordChangeForm(request.user, request.POST)
         if form.is_valid():
             user = form.save()
             update_session_auth_hash(request, user)
-            return redirect('main')
-    else:
-        form = CustomPasswordChangeForm(request.user)
+            return JsonResponse({"status": "success", "message": "암호가 성공적으로 변경되었습니다."}, status=200)
+        else:
+            errors = form.errors.as_json()
+            return JsonResponse({"status": "error", "errors": errors}, status=400)
+    
+    # 일반 요청에 대한 처리는 이전과 동일하게 유지합니다.
+    form = CustomPasswordChangeForm(request.user)
     context = {
         'form': form,
     }
     return render(request, 'accounts/change_password.html', context)
 
 
+# @login_required
+# def profile(request, user_pk):
+#     User = get_user_model()
+#     person = User.objects.get(pk=user_pk)
+#     mydata = Mydatas.objects.filter(user=person)
+#     context = {
+#         'person': person,
+#         'mydata': mydata,
+#     }
+#     return render(request, 'accounts/profile.html', context)
+
 @login_required
 def profile(request, user_pk):
     User = get_user_model()
     person = User.objects.get(pk=user_pk)
     mydata = Mydatas.objects.filter(user=person)
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        # 여기서는 프로필 편집 부분만 렌더링해서 반환하면 됩니다.
+        return render(request, 'path_to_profile_edit_template.html', {'person': person})
+
     context = {
         'person': person,
         'mydata': mydata,

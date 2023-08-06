@@ -8,6 +8,9 @@
     <link rel="stylesheet" href="{% static 'base/css/base.css' %}" />
     {% block header %}{% endblock header %}
     <title>ForTheFolio {% block title %}{% endblock title %}</title>
+    <style>
+      {% block style %}{% endblock style %}
+    </style>
   </head>
   <body>
     <header class="header--container">
@@ -25,7 +28,7 @@
         {% endif %}
       </div>
     </header>
-    <main>{% block content %}{% endblock content %}</main>
+    <main class="main--container">{% block content %}{% endblock content %}</main>
     <footer></footer>
     <script>
       const navbarItems = JSON.parse('{{ navbar_items|safe }}');
@@ -42,5 +45,6 @@
       });
       console.log(navbarItems);
     </script>
+
   </body>
 </html>

@@ -9,5 +9,3 @@ def navbar(request):
     navbar_items_json = json.dumps(navbar_items)
     return {'navbar_items': navbar_items_json}
 
-# 앱네임을 사용하기 위해 reverse를 사용해야하나, reverse는 재귀호출 에러
-# reverse_lazy는 JSON에 __proxy__ 오브젝트를 직렬화하려고 하는 문제 : str()사용하여 해결됨.

@@ -1,24 +1,88 @@
 {% extends 'base.html' %}
 {% load static %}
+<link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}" />
 {% block title %}마이페이지{% endblock title %}
 
+{% block style %}
+.profile--container {
+  display: grid;
+  grid-template-columns: 1fr 0.5fr;
+  grid-gap: 2rem;
+  margin-top: 2rem;
+}
+.mydata--list {
+  border: 1px solid #000000;
+  padding: 1rem;
+  height: 500px;
+}
+.profile--list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  border: 1px solid #000000;
+  padding: 1rem;
+  height: 500px;
+}
+.profile--user--wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  
+}
+.profile--etc--wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+.mydata--create {
+  color: #fff;
+  border-radius: 30px;
+  background-color: #1C77FF;
+  padding: 0.5rem 1rem;
+}
+{% endblock style %}
+
 {% block content %}
-<article>
-  <h1>{{ user }}님의 프로필 페이지 입니다.</h1>
-  <div>
-    <a href="{% url 'accounts:logout' %}" style="font-size: 20px; color:red;">로그아웃</a>
-  </div>
-</article>
-<article>
-  {% for md in mydata %}
-    <div>
-      {{ md.user }}
-      {{ md.title }}
-      {{ md.content }}
-      <a href="{% url 'portfolios:m_update' md.title %}">update</a>
-      <a href="{% url 'portfolios:m_delete' md.title %}" onclick="return confirm('삭제하시겠습니까?')">delete</a>
+<article class="profile--container">
+  <section class="mydata--list">
+    {% for md in mydata %}
+      <div>
+        {{ md.pk }}
+        {{ md.user }}
+        {{ md.title }}
+        {{ md.content }}
+        <a href="{% url 'portfolios:m_update' md.title %}">수정</a>
+        <a href="{% url 'portfolios:m_delete' md.title %}" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+      </div>
+    {% endfor %}
+  </section>
+  <section class="profile--list">
+    <div class="profile--user--wrap">
+      <p>
+        <img src="{{ user.image.url }}" alt="user image">
+      </p>
+      <p>user name</p>
+      <p>{{ user }}</p>
     </div>
-  {% endfor %}
+    <div class="profile--etc--wrap">
+      <p>내 포트폴리오</p>
+      <p>
+        <a href="{% url 'payments:index' %}">결제 정보</a>
+      </p>
+      <p>
+        <a href="{% url 'accounts:update' %}">회원정보 수정</a>
+      </p>
+      <p>
+        <a href="{% url 'accounts:change_password' %}">암호 변경</a>
+      </p>
+      <p>
+        <a href="{% url 'accounts:logout' %}" style="color:red;">로그 아웃</a>
+      </p>
+    </div>
+    <div class="">
+      <a class="mydata--create" href="{% url 'portfolios:m_create' %}">포트폴리오 만들기 ></a>
+    </div>
+  </section>
 </article>
 {% if messages %}
   {% for message in messages %}
@@ -27,6 +91,35 @@
     </script>
   {% endfor %}
 {% endif %}
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script>
+  $(document).ready(function() {
+    // 회원정보 수정 링크 클릭 이벤트
+    $('a[href="{% url 'accounts:update' %}"]').click(function(e) {
+        e.preventDefault();
+        loadContentViaAjax($(this).attr('href'));
+    });
+
+    // 암호 변경 링크 클릭 이벤트
+    $('a[href="{% url 'accounts:change_password' %}"]').click(function(e) {
+        e.preventDefault();
+        loadContentViaAjax($(this).attr('href'));
+    });
+
+    function loadContentViaAjax(url) {
+        $.ajax({
+            url: url,
+            type: 'GET',
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            success: function(data) {
+                $('.mydata--list').html(data);
+            }
+        });
+    }
+});
+
+
+</script>
 {% endblock content %}
 
        

@@ -1,16 +1,25 @@
-{% extends 'base.html' %}
-{% load static %}
-{% block title %}회원정보 수정{% endblock title %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>회원정보 수정</title>
+</head>
+<body>
+  <article>
+    <form action="{% url 'accounts:update' %}" method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div>{{ form.email }}</div>
+      <div>{{ form.password1 }}</div>
+      <div>{{ form.password2 }}</div>
+      <div>{{ form.image }}</div>
+      <input type="submit" value="회원정보 수정">
+    </form>
+    <p>
+      <a href="{% url 'accounts:delete' %}" style="font-size: 20px; color:red;">회원탈퇴</a>
+    </p>
+  </article>
+</body>
+</html>
 
-{% block content %} 
-<article>
-  <form action="{% url 'accounts:update' %}" method="POST" enctype="multipart/form-data">
-    {% csrf_token %}
-    <div>{{ form.email }}</div>
-    <div>{{ form.password1 }}</div>
-    <div>{{ form.password2 }}</div>
-    <div>{{ form.image }}</div>
-    <input type="submit" value="회원정보 수정">
-  </form>
-</article>
-{% endblock content %}
+

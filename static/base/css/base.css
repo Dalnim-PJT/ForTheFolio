@@ -42,3 +42,8 @@
   border-radius: 30px;
 
 }
+
+.main--container {
+  min-height: 80vh;
+  margin: auto 10%;
+}

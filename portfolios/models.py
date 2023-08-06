@@ -56,7 +56,7 @@ class TechStack(models.Model):
                     ("Unix", "Unix"),("Vault", "Vault"),("VueJS", "VueJS"),("Vuex", "Vuex"),("WebRTC", "WebRTC"),("Windows", "Windows"),
                     ("Zabbix", "Zabbix"),("Zeppelin", "Zeppelin"),("Zipkin", "Zipkin"),("Zustand", "Zustand")
                     ]
-    stack = models.CharField(max_length=20, choices=STACK_CHOICES)
+    stack = models.CharField(max_length=40, choices=STACK_CHOICES)
 
 
 # 제공하는 템플릿 모델
