@@ -27,6 +27,10 @@
     </script>
   {% endfor %}
 {% endif %}
-{% endblock content %}
 
-       
+<article>
+  {% if request.user.subscription %}
+    {{ request.user.subscription }}
+  {% endif %}
+</article>
+{% endblock content %}

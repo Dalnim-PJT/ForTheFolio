@@ -17,3 +17,4 @@ class Payment(models.Model):
     price = models.ForeignKey(Subscription, on_delete=models.CASCADE)
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
+
