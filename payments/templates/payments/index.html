@@ -1,14 +1,35 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load subscribe %}
 {% block title %}요금{% endblock title %}
 
 {% block content %} 
-<article>
-  <h1>요금 인덱스 페이지 입니다.</h1>
-</article>
+  <article>
+    <h1>요금 인덱스 페이지 입니다.</h1>
+  </article>
 
-{% for sub in subscriptions %}
-    {{ sub }}
-{% endfor %}
+  {% for sub in subscriptions %}
+    <form method="post" action="{% url 'payments:subscribe' sub.id %}">
+      {% csrf_token %}
+      {% if request.user|can_subscribe:sub %}
+        <button type="submit">{{ sub }}</button>
+      {% else %}
+        {% if request.user.subscription.price == sub %}
+          <button type="submit" disabled>{{ sub }} (현재 구독 중)</button>
+        {% else %}
+          <button type="button" class="alert-button">{{ sub }}</button>
+        {% endif %}
+      {% endif %}
+    </form>
+  {% endfor %}
+
+
+<script>
+  document.querySelectorAll('.alert-button').forEach(function(button) {
+    button.addEventListener('click', function() {
+      alert('다른 요금제 선택 불가');
+    });
+  });
+</script>
 
 {% endblock content %}
