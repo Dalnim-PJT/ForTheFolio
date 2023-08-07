@@ -1,0 +1,8 @@
+.profile--container {
+  display: grid;
+  grid-template-columns: 1fr 200px;
+}
+section {
+  color:red;
+  font-size: 2rem;
+}

@@ -32,13 +32,76 @@
   align-items: center;
   color: #1C77FF;
 }
-.header--login {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  width: 80px;
-  height: 35px;
+
+.main--container {
+  min-height: 80vh;
+  margin: auto 10%;
+}
+
+.form--control {
+  width: 300px;
+  font-size: 1.2rem;
+  border: none;
+  border-bottom: 1px solid #aaa;
+  padding: 0.3rem 1rem 0.1rem;
+  margin: 0.5rem 0;
+}
+
+.form--control:focus {
+  border-bottom: 1px solid #1C77FF;
+  outline: none;
+}
+
+
+.blue--button--border {
+  color: #1C77FF;
+  font-size: 1.2rem;
   border: 1px solid #1C77FF;
   border-radius: 30px;
+  background-color: #fff;
+  padding: 0.5rem 1.5rem;
+  transition: color 0.3s, background-color 0.3s;
+}
+.blue--button--border:hover {
+  color: #fff;
+  background-color: #1C77FF;
+}
+.red--button--border {
+  color: red;
+  font-size: 1.2rem;
+  border: 1px solid red;
+  border-radius: 30px;
+  padding: 0.5rem 1.5rem;
+  transition: color 0.3s, background-color 0.3s;
+}
+.red--button--border:hover {
+  color: #fff;
+  background-color: red;
+}
+.gray--button--border {
+  color: #000;
+  font-size: 1.2rem;
+  border: 1px solid gray;
+  border-radius: 30px;
+  background-color: #fff;
+  padding: 0.5rem 1.5rem;
+  transition: color 0.3s, background-color 0.3s;
+}
+.gray--button--border:hover {
+  color: #fff;
+  background-color: gray;
+}
 
+.blue--button-bgc {
+  color: #fff;
+  font-size: 1.2rem;
+  border-radius: 30px;
+  border: 1px solid #1C77FF;
+  background-color: #1C77FF;
+  padding: 0.5rem 1.5rem;
+  transition: color 0.3s, background-color 0.3s;
+}
+.blue--button-bgc:hover {
+  color: #1C77FF;
+  background-color: #fff;
 }
