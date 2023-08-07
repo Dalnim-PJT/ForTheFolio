@@ -6,13 +6,19 @@ from imagekit.processors import ResizeToFill
 import os
 from django.conf import settings
 from django.core.validators import URLValidator
+from django.forms.widgets import ClearableFileInput
 
 # BasicForm, PortfolioForm 중복을 피하기 위한 BaseForm
+
+class CustomClearableFileInput(ClearableFileInput):
+    template_name = 'portfolios/custom_clearable_file_input.html'
+
 class BaseForm(forms.ModelForm):
     title = forms.CharField(
         widget=forms.TextInput(
             attrs={
                 'placeholder': '포트폴리오 제목',
+                'class' : 'basic--form',
             }
         )
     )
@@ -21,14 +27,16 @@ class BaseForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 'placeholder': '이름',
+                'class' : 'basic--form',
             }
         )
     )
 
     image = ProcessedImageField(
-        widget=forms.ClearableFileInput(
+        widget=CustomClearableFileInput(
             attrs={
                 'placeholder': '프로필 이미지',
+                'class' : 'basic--img--form',
             }
         ),
         spec_id='image_size',
@@ -38,6 +46,7 @@ class BaseForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 'placeholder': '직무',
+                'class' : 'basic--form',
             }
         )
     )
@@ -46,6 +55,7 @@ class BaseForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 'placeholder': '휴대폰 번호',
+                'class' : 'basic--form',
             }
         )
     )
@@ -54,6 +64,7 @@ class BaseForm(forms.ModelForm):
         widget=forms.EmailInput(
             attrs={
                 'placeholder': '이메일',
+                'class' : 'basic--form',
             }
         )
     )
@@ -61,7 +72,8 @@ class BaseForm(forms.ModelForm):
     introduction = forms.CharField(
         widget=forms.Textarea(
             attrs={
-                'placeholder': '소개',
+                'placeholder': '내 소개글(500자 이내)',
+                'class' : 'basic--form',
             }
         )
     )
@@ -99,6 +111,7 @@ class PjtForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 'placeholder': '프로젝트 제목',
+                'class':'pjt--form',
             }
         )
     )
@@ -107,7 +120,8 @@ class PjtForm(forms.ModelForm):
         required=False,
         widget=forms.Textarea(
             attrs={
-                'placeholder': '소개',
+                'placeholder': '설명',
+                'class':'pjt--form',
             }
         )
     )
@@ -117,6 +131,7 @@ class PjtForm(forms.ModelForm):
         widget=forms.Textarea(
             attrs={
                 'placeholder': '역할 및 기능',
+                'class':'pjt--form',
             }
         )
     )
@@ -127,6 +142,7 @@ class PjtForm(forms.ModelForm):
         widget=forms.URLInput(
             attrs={
                 'placeholder': 'github url',
+                'class':'pjt--form',
             }
         )
     )
@@ -137,6 +153,7 @@ class PjtForm(forms.ModelForm):
         widget=forms.URLInput(
             attrs={
                 'placeholder': 'web url',
+                'class':'pjt--form',
             }
         )
     )
@@ -147,11 +164,14 @@ class PjtForm(forms.ModelForm):
 
 class PjtImageForm(forms.ModelForm):
     image = forms.FileField(
+        label=False,
         required=False,
         widget=forms.ClearableFileInput(
             attrs={
                 'multiple': True, 
                 'placeholder': '프로젝트 이미지',
+                'id': 'image-upload-0',
+                'style': 'display:none;',
             }
         )
     )
@@ -181,6 +201,7 @@ class CareerForm(forms.ModelForm):
         widget=forms.TextInput(
             attrs={
                 'placeholder': '경력',
+                'class': 'career--content',
             }
         )
     )
@@ -196,6 +217,7 @@ class LinkForm(forms.ModelForm):
         widget=forms.Select(
             attrs={
                 'placeholder': '선택',
+                'class':'link--content',
             }
         )
     )
@@ -206,6 +228,8 @@ class LinkForm(forms.ModelForm):
         widget=forms.URLInput(
             attrs={
                 'placeholder': 'url',
+                'class':'link--content',
+                'style': 'width:80%; margin-right:10px;'
             }
         )
     )
