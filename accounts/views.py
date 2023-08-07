@@ -4,7 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from .models import User
 from .forms import CustomUserCreationForm, CustomUserChangeForm, CustomPasswordChangeForm, CustomAuthenticationForm
-from portfolios.models import Mydatas
+from portfolios.models import Mydatas, Portfolios
 
 # Create your views here.
 
@@ -143,6 +143,7 @@ def profile(request, user_pk):
     User = get_user_model()
     person = User.objects.get(pk=user_pk)
     mydata = Mydatas.objects.filter(user=person)
+    myportfolio = Portfolios.objects.filter(user=person)
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # 여기서는 프로필 편집 부분만 렌더링해서 반환하면 됩니다.
@@ -151,5 +152,6 @@ def profile(request, user_pk):
     context = {
         'person': person,
         'mydata': mydata,
+        'myportfolio': myportfolio,
     }
     return render(request, 'accounts/profile.html', context)

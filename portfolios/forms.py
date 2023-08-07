@@ -74,18 +74,6 @@ class BaseForm(forms.ModelForm):
 class BasicForm(BaseForm):
     class Meta(BaseForm.Meta):
         model = Mydatas
-    
-    # def __init__(self, *args, **kwargs):
-    #     self.user = kwargs.pop('user', None)
-    #     super().__init__(*args, **kwargs)
-    
-    # def clean_title(self):
-    #     title = self.cleaned_data['title']
-    #     if Mydatas.objects.filter(title=title, user=User.objects.get(email=self.user)).exists():
-    #         # self.add_error('title', '중복된 title이 존재합니다.')
-    #         raise forms.ValidationError('중복된 title 이 존재합니다.')
-        
-    #     return title
 
 
 class PortfolioForm(BaseForm):
