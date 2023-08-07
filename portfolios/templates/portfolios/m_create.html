@@ -3,64 +3,124 @@
 {% block title %}MY DATA{% endblock title %}
 
 {% block header %}
+  <link rel="stylesheet" href="{% static 'mydata/css/create.css' %}" />
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
 {% endblock header %}
 
 {% block content %}
+<div class="create--container">
+  <form action="{% url 'portfolios:m_create' %}" method='POST' enctype='multipart/form-data'>
+    {% csrf_token %}
+    {{ basic.title }}
+    <p id="title-error"></p>
+    <div class="basic--container">
+      <div class="basic--container--content">
+        {{ basic.username }}
+        {{ basic.job }}
+        {{ basic.phone }}
+        {{ basic.email }}
+      </div>
+      <div class="basic--container--content--image">
+        <div class="image--header">
+          <h1>프로필 사진</h1>
+          {{ basic.image }}
+        </div>
+        <div class="imag--box">
+          <img id="preview-image" src="#" alt="미리보기" style="display: none; width: 150px; height: 150px; margin:auto;">
+        </div>
+      </div>
+    </div>
+    <div class="link--header">
+      <h3>링크</h3>
+      <button type="button" id="add-link-entry">
+        <svg width="15px" height="15px" viewBox="0 -0.5 9 9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="gray"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>plus_mini [#1523]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-345.000000, -206.000000)" fill="gray"> <g id="icons" transform="translate(56.000000, 160.000000)"> <polygon id="plus_mini-[#1523]" points="298 49 298 51 294.625 51 294.625 54 292.375 54 292.375 51 289 51 289 49 292.375 49 292.375 46 294.625 46 294.625 49"> </polygon> </g> </g> </g> </g></svg>
+      </button>
+    </div>
+    <div class="link--box">
+      <div id="link-entries">
+        <div class="link-entry">
+          {{ link.link }}
+          {{ link.link_content }}
+        </div>
+      </div>
+    </div>
+    
+    {{ basic.introduction }}
+    <div class="stack--box">
+      <h1>스택</h1> 
+      <select multiple class="select" id="b_stack_multi" name="b_stack_multi" style="width:335px; height:70px;" multiple="multiple">
+        {% for stack in stacks %}
+          <option value="{{stack.0}}">{{stack.0}}</option>
+        {% endfor %}
+      </select>
+    </div>
 
-<form action="{% url 'portfolios:m_create' %}" method='POST' enctype='multipart/form-data'>
-  {% csrf_token %}
-  <h3>basic</h3>
-  {{ basic.as_p }}
-  <p id="title-error"></p>
-  stack
-  <select multiple class="select" id="b_stack_multi" name="b_stack_multi" style="width:335px; height:70px;" multiple="multiple">
-    {% for stack in stacks %}
-      <option value="{{stack.0}}">{{stack.0}}</option>
-    {% endfor %}
-  </select>
-  <h3>link</h3>
-  <fieldset id="link-formset">
-    <legend>LINK Entries</legend>
-    <div id="link-entries">
-      <div class="link-entry">
-        {{ link.as_table }}
-      </div>
+    <div class="link--header">
+      <h3>프로젝트</h3>
+      <button type="button" id="add-pjt-entry">
+        <svg width="15px" height="15px" viewBox="0 -0.5 9 9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="gray"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>plus_mini [#1523]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-345.000000, -206.000000)" fill="gray"> <g id="icons" transform="translate(56.000000, 160.000000)"> <polygon id="plus_mini-[#1523]" points="298 49 298 51 294.625 51 294.625 54 292.375 54 292.375 51 289 51 289 49 292.375 49 292.375 46 294.625 46 294.625 49"> </polygon> </g> </g> </g> </g></svg>
+      </button>
     </div>
-    <button type="button" id="add-link-entry">Add LINK Entry</button>
-  </fieldset>
+      <div id="pjt-entries">
+        <div class="pjt-entry">
+          <div class="pjt--content">
+            <h1>제목</h1>
+            {{ pjt.name }}
+            <div id="more-btn">
+              <svg width="30px" height="30px" viewBox="0 0 15 15" fill="none" xmlns="http://www.w3.org/2000/svg" stroke="#5c8dff"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <path d="M4 9H11L7.5 4.5L4 9Z" fill="#5c8dff"></path> </g></svg>
+            </div>
+          </div>
+          <div class="pjt--content">
+            <h1>설명</h1>
+            {{ pjt.pjts_content }}
+          </div>
 
-  <h3>pjt</h3>
-  <fieldset id="pjt-formset">
-    <legend>PJT Entries</legend>
-    <div id="pjt-entries">
-      <div class="pjt-entry">
-        {{ pjt.as_table }}
-        <h3>pjtimage</h3>
-        {{ pjtimage.as_table }}
-        <select multiple class="select" id="p_stack_multi-0" name="p_stack_multi-0" style="width:335px; height:70px;" multiple="multiple">
-          {% for stack in stacks %}
-            <option value="{{stack.0}}">{{stack.0}}</option>
-          {% endfor %}
-        </select>
+          <div class="pjt--content">
+            <h1>이미지</h1>
+            <div id="image-preview-container" ondrop="handleImageDrop(event)" ondragover="handleDragOver(event)" onclick="openFileInput()">
+              <p id="placeholder-text">클릭하거나 드래그하여 이미지를 추가하세요.</p>
+            </div>
+            <input type="file" id="image-upload" multiple style="display: none;">
+          </div>
+
+          
+          <div class="pjt--content">
+            <h1>역할,<br>구현<br>기능</h1>
+            {{ pjt.role }}
+          </div>
+          <div class="pjt--content">
+            <h1>링크</h1>
+              {{ pjt.github }}
+              {{ pjt.web }}
+          </div>
+          <div class="pjt--content" id="stack--box">
+            <h1>스택</h1>
+            <select multiple class="select" id="p_stack_multi-0" name="p_stack_multi-0" style="width:335px; height:70px;" multiple="multiple">
+              {% for stack in stacks %}
+                <option value="{{stack.0}}">{{stack.0}}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+      </div>
+
+    <div class="link--header">
+      <h3>경력</h3>
+      <button type="button" id="add-career-entry">
+        <svg width="15px" height="15px" viewBox="0 -0.5 9 9" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" fill="gray"><g id="SVGRepo_bgCarrier" stroke-width="0"></g><g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g><g id="SVGRepo_iconCarrier"> <title>plus_mini [#1523]</title> <desc>Created with Sketch.</desc> <defs> </defs> <g id="Page-1" stroke="none" stroke-width="1" fill="none" fill-rule="evenodd"> <g id="Dribbble-Light-Preview" transform="translate(-345.000000, -206.000000)" fill="gray"> <g id="icons" transform="translate(56.000000, 160.000000)"> <polygon id="plus_mini-[#1523]" points="298 49 298 51 294.625 51 294.625 54 292.375 54 292.375 51 289 51 289 49 292.375 49 292.375 46 294.625 46 294.625 49"> </polygon> </g> </g> </g> </g></svg>
+      </button>
+    </div>
+    <div class="link--box">
+      <div id="career-entries">
+        <div class="career-entry">
+          {{ career.career_content }}
+        </div>
       </div>
     </div>
-    <button type="button" id="add-pjt-entry">Add PJT Entry</button>
-  </fieldset>
-  
-  <h3>career</h3>
-  <fieldset id="career-formset">
-    <legend>CAREER Entries</legend>
-    <div id="career-entries">
-      <div class="career-entry">
-        {{ career.as_table }}
-      </div>
-    </div>
-    <button type="button" id="add-career-entry">Add CAREER Entry</button>
-  </fieldset>
-  
-  <input type="submit" value="등록" id="submit-button">
-</form>
+    
+    <input type="submit" value="작성 완료" id="submit-button">
+  </form>
+</div>
 
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
 <script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js" /></script>
@@ -136,13 +196,13 @@
 
   function addPjtField() {
     const pjtEntries = document.getElementById("pjt-entries");
-    const lastPjtEntry = pjtEntries.firstElementChild;
+    const firstPjtEntry = pjtEntries.firstElementChild;
     const newPjtEntry = document.createElement("div");
     newPjtEntry.className = "pjt-entry";
 
     const newIndex = pjtEntries.childElementCount;
 
-    newPjtEntry.innerHTML = lastPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-${newIndex}`);
+    newPjtEntry.innerHTML = firstPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-${newIndex}`);
     newPjtEntry.querySelector('.select').remove();
     newPjtEntry.querySelector('.select2').remove();
   
@@ -167,9 +227,13 @@
 
     const closeButton = document.createElement("button");
     closeButton.innerHTML = "&#10006;";
-    newPjtEntry.appendChild(closeButton);
+    
+    const pjtContentDiv = newPjtEntry.querySelector("#stack--box");
 
-    newPjtEntry.appendChild(selectElement);
+    pjtContentDiv.appendChild(selectElement);
+    pjtContentDiv.appendChild(closeButton);
+
+    newPjtEntry.appendChild(pjtContentDiv);
     pjtEntries.appendChild(newPjtEntry);
 
     $(`#p_stack_multi-${newIndex}`).select2();
@@ -179,10 +243,93 @@
   document.getElementById("add-pjt-entry").addEventListener("click", addPjtField);
   document.getElementById("pjt-entries").addEventListener("click", function(event) {
     if (event.target.tagName === "BUTTON") {
-      const pjtEntry = event.target.parentNode;
+      const pjtEntry = event.target.closest(".pjt-entry");
       pjtEntry.remove();
     }
+  
+    if (event.target.closest("#more-btn")) {
+      const moreBtn = event.target.closest("#more-btn");
+      const entry = event.target.closest(".pjt-entry");
+      const contentSections = entry.querySelectorAll(".pjt--content:not(:first-child)");
+      const isReversed = moreBtn.classList.toggle('is-reversed');
+      const isHidden = isReversed;
+
+      for (let i = 0; i < contentSections.length; i++) {
+        const section = contentSections[i];
+        section.classList.toggle("pjt--content-hidden", isHidden);
+      }
+    }
   });
+
+  function handleImageUpload(event) {
+    const previewContainer = document.getElementById("image-preview-container");
+    const files = event.target.files;
+
+    for (const file of files) {
+      addImageToPreview(previewContainer, file);
+    }
+
+    togglePlaceholderText();
+  }
+
+  function handleDragOver(event) {
+    event.preventDefault();
+  }
+
+  function handleImageDrop(event) {
+    event.preventDefault();
+    const previewContainer = document.getElementById("image-preview-container");
+    const files = event.dataTransfer.files;
+
+    for (const file of files) {
+      addImageToPreview(previewContainer, file);
+    }
+
+    togglePlaceholderText();
+  }
+
+  function addImageToPreview(previewContainer, file) {
+    const reader = new FileReader();
+
+    reader.onload = function (e) {
+      const imagePreview = document.createElement("div");
+      imagePreview.className = "image-preview";
+      const image = new Image();
+      image.src = e.target.result;
+      image.alt = file.name;
+      imagePreview.appendChild(image);
+
+      const removeButton = document.createElement("button");
+      removeButton.className = "remove-image-btn";
+      removeButton.textContent = "x";
+      removeButton.addEventListener("click", function () {
+        imagePreview.remove();
+        togglePlaceholderText();
+        event.stopPropagation();
+      });
+
+      imagePreview.appendChild(removeButton);
+      previewContainer.appendChild(imagePreview);
+    };
+
+    reader.readAsDataURL(file);
+  }
+
+  function openFileInput() {
+    document.getElementById("image-upload").click();
+  }
+
+  function togglePlaceholderText() {
+    const placeholderText = document.getElementById("placeholder-text");
+    const previewContainer = document.getElementById("image-preview-container");
+    if (previewContainer.children.length === 0 ) {
+      placeholderText.style.display = "block";
+    } else {
+      placeholderText.style.display = "none";
+    }
+  }
+
+  document.getElementById("image-upload").addEventListener("change", handleImageUpload);
   
   function addCareerField() {
     const careerEntries = document.getElementById("career-entries");
@@ -207,6 +354,22 @@
     }
   });
 
+  function previewImage(event) {
+    var input = event.target;
+    if (input.files && input.files[0]) {
+      var reader = new FileReader();
   
+      reader.onload = function(e) {
+        var preview = document.querySelector('#preview-image');
+        preview.setAttribute('src', e.target.result);
+        preview.style.display = 'block';
+      };
+  
+      reader.readAsDataURL(input.files[0]);
+    }
+  }
+  var imageInput = document.querySelector('#id_image');
+  imageInput.addEventListener('change', previewImage);
+
 </script> 
 {% endblock content %}
