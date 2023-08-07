@@ -2,15 +2,52 @@
 {% load static %}
 {% block title %}로그인{% endblock title %}
 
+{% block style %}
+.login--signup { 
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  gap: 2rem;
+  height: 60vh;
+}
+  .login--container{
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .login--form {
+  }
+  .border--wrap {
+    width: 1px;
+    height: 100%;
+    background-color: #aaa;
+  }
+  .signup--container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+  }
+{% endblock style %}
+
 {% block content %}
-<article>
-  <form action="{% url 'accounts:login' %}" method="POST">
-    {% csrf_token %}
-    <div>{{ form.username }}</div>
-    <div>{{ form.password }}</div>
-    {% comment %} <div>{{ form.as_p }}</div> {% endcomment %}
-    <input type="submit" value="로그인">
-  </form>
-  <a href="{% url 'accounts:signup' %}">회원가입</a>
+<article class="login--signup">
+  <section class="login--container">
+    <form class="login--form" action="{% url 'accounts:login' %}" method="POST">
+      {% csrf_token %}
+      <div>{{ form.username }}</div>
+      <div>{{ form.password }}</div>
+      {% comment %} <div>{{ form.as_p }}</div> {% endcomment %}
+      <input class="blue--button--border" type="submit" value="로그인">
+    </form>
+  </section>
+  <section class="border--wrap"></section>
+  <section class="signup--container">
+    <a class="gray--button--border" href="{% url 'accounts:signup' %}">회원가입하러 가기 ></a>
+  </section>
 </article>
 {% endblock content %}
