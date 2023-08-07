@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load subscribe %}
 {% block title %}요금{% endblock title %}
 
 {% block content %} 
@@ -10,17 +11,18 @@
   {% for sub in subscriptions %}
     <form method="post" action="{% url 'payments:subscribe' sub.id %}">
       {% csrf_token %}
-      {% if request.user.subscription %}
-        {% if request.user.subscription == sub %}
+      {% if request.user|can_subscribe:sub %}
+        <button type="submit">{{ sub }}</button>
+      {% else %}
+        {% if request.user.subscription.price == sub %}
           <button type="submit" disabled>{{ sub }} (현재 구독 중)</button>
         {% else %}
           <button type="button" class="alert-button">{{ sub }}</button>
         {% endif %}
-      {% else %}
-        <button type="submit">{{ sub }}</button>
       {% endif %}
     </form>
   {% endfor %}
+
 
 <script>
   document.querySelectorAll('.alert-button').forEach(function(button) {
@@ -29,6 +31,5 @@
     });
   });
 </script>
-
 
 {% endblock content %}
