@@ -1,0 +1,52 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}MY Portfolio detail{% endblock title %}
+
+{% block content %}
+<div>
+  <h3>my_portfolio</h3>
+  {{ my_portfolio.title }}
+  {{ my_portfolio.username }}
+  {{ my_portfolio.image }}
+  {{ my_portfolio.job }}
+  {{ my_portfolio.phone }}
+  {{ my_portfolio.email }}
+  {{ my_portfolio.introduction }}
+  <h3>stack</h3>
+  {% for stack in my_portfolio_stacks %}
+    <li>{{ stack }}</li>
+  {% endfor %}
+  <h3>link</h3>
+  {% for link in links %}
+    <span>{{ link.link }}: {{ link.link_content }}</span>
+  {% endfor %}
+  <h3>pjts</h3>
+  {% for pjt, pjt_images, stacks in pjts %}
+    <div>
+      <div>
+        {% for pjt_image in pjt_images %}
+          <img src="{{ pjt_image.image.url }}" alt="userimage" style="width:200px; height:200px;">
+        {% endfor%}
+      </div>
+      <div>
+        <p>제목: {{pjt.name}}</p>
+        <p>역할: {{pjt.role}}</p>
+        <p>설명: {{pjt.pjts_content}}</p>
+        {% if pjt.github %}
+          <p>깃헙주소: {{ pjt.github }}</p>
+        {% endif %}
+        {% if pjt.web %}
+          <p>URL: {{ pjt.web }}</p>
+        {% endif %}
+        {% for pjt_stack in stacks %}
+          <p>{{ pjt_stack }}</p>
+        {% endfor %}
+      </div>
+    </div>
+  {% endfor %}
+  <h3>career</h3>
+  {% for career in careers %}
+    <p>{{ career.career_content }}</p>
+  {% endfor %}
+</div>
+{% endblock content %}

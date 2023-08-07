@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
-from .models import P_templates, Mydatas, Portfolios, Pjts, Pjtimages, Links, Career, TechStack
+from .models import P_templates, Mydatas, Portfolios, Pjts, Pjtimages, Links, Career, TechStack, P_templates
 from .forms import BasicForm, PortfolioForm, PjtForm, PjtImageForm, DeletePjtImageForm, LinkForm, CareerForm
+from accounts.models import User
 from django.http import JsonResponse
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -268,25 +269,109 @@ def m_delete(request, mydata_title):
 
 @login_required
 def p_create(request, template_name):
-    test_mydata = Mydatas.objects.get(user_id=9)
+    test_mydata = Mydatas.objects.get(user_id=User.objects.get(username='admin'))
     mydata = Mydatas.objects.filter(user_id=request.user.id)
-    selected_data = None
-    selected_mydata = Mydatas.objects.get(user_id=9)
-    if request.method == 'POST':
-        selected_mydata = Mydatas.objects.get(user_id=request.user.id, title=selected_data)
-        
+    selected_data = request.GET.get('data_title', '포트폴리오 예시')
+    if selected_data == '포트폴리오 예시':
+        selected_mydata = Mydatas.objects.get(user_id=User.objects.get(username='admin'))
     else:
-        selected_data = request.GET.get('data_title', '개발자정토리')
-        if selected_data == '개발자정토리':
-            selected_mydata = Mydatas.objects.get(user_id=9)
-        else:
-            selected_mydata = Mydatas.objects.get(user_id=request.user.id, title=selected_data)
+        selected_mydata = Mydatas.objects.get(user_id=request.user.id, title=selected_data)
+    selected_mydata_stacks = [stack.stack for stack in selected_mydata.stack.all()]
+    my_pjts = Pjts.objects.filter(mydata=selected_mydata)
+    selected_my_careers = list(Career.objects.filter(mydata=selected_mydata))
+    selected_my_links = list(Links.objects.filter(mydata=selected_mydata))
+    if request.method == 'POST':
+        basic = BasicForm(request.POST, request.FILES, instance=selected_mydata)
+        portfolio = PortfolioForm()
+        update_pjt_ids = [k.split('-')[1] for k in request.POST if k.startswith('pjt-') and k.endswith('name')]
+        update_career_ids = [k.split('-')[1] for k in request.POST if k.startswith('career-') and k.endswith('career_content')]
+        update_link_ids = [k.split('-')[1] for k in request.POST if k.startswith('link-') and k.endswith('link_content')]
+
+        if basic.is_valid():
+            # Update basic information
+            portfolio_data = portfolio.save(commit=False)
+            portfolio_data.user = request.user
+            portfolio_data.title = basic.cleaned_data['title']
+            portfolio_data.username = basic.cleaned_data['username']
+            portfolio_data.image = basic.cleaned_data['image']
+            portfolio_data.job = basic.cleaned_data['job']
+            portfolio_data.phone = basic.cleaned_data['phone']
+            portfolio_data.email = basic.cleaned_data['email']
+            portfolio_data.introduction = basic.cleaned_data['introduction']
+            portfolio_data.template_id = P_templates.objects.get(title=template_name).id
+            portfolio_data.save()
+
+            b_stacks = request.POST.getlist('b_stack_multi')
+            for b_stack in b_stacks:
+                portfolio_data.stack.add(TechStack.objects.get(stack=b_stack))
+
+            for i, pjt_id in enumerate(update_pjt_ids):
+                pjt_instance = Pjts.objects.filter(pk=pjt_id).first()
+                pjt_form = PjtForm(request.POST, prefix=f'pjt-{pjt_id}', instance=pjt_instance)
+                new_pjt = PjtForm()
+                pjt_image_form = PjtImageForm(request.POST, request.FILES, prefix=f'pjt-{pjt_id}')
+
+                if pjt_form.is_valid():
+                    pjt_data = new_pjt.save(commit=False)
+                    pjt_data.name = pjt_form.cleaned_data['name']
+                    pjt_data.pjts_content = pjt_form.cleaned_data['pjts_content']
+                    pjt_data.role = pjt_form.cleaned_data['role']
+                    pjt_data.github = pjt_form.cleaned_data['github']
+                    pjt_data.web = pjt_form.cleaned_data['web']
+                    pjt_data.portfolio_id = portfolio_data.id
+                    pjt_data.save()
+
+                    # Add stack
+                    p_stacks = request.POST.getlist(f'p_stack_multi-{i}')
+                    for p_stack in p_stacks:
+                        pjt_data.stack.add(TechStack.objects.get(stack=p_stack))
+                    
+                    # Add images
+                    if pjt_image_form.is_valid():
+                        images = request.FILES.getlist(f'pjt-{pjt_instance.id}-image') or request.FILES.getlist(f'pjt-{i}-image')
+                        for image in images:
+                            Pjtimages.objects.create(image=image, portfolio=portfolio_data, pjt=pjt_data)
+
+                        pjt_image_delete_form = DeletePjtImageForm(prefix=f'delete-pjt-{pjt_id}', pjt=pjt_instance, data=request.POST)
+                        if pjt_instance and pjt_image_delete_form.is_valid():
+                            for image in pjt_instance.pjtimages_set.exclude(pk__in=pjt_image_delete_form.cleaned_data['delete_images']):
+                                Pjtimages.objects.create(image=image.image, portfolio=portfolio_data, pjt=pjt_data)
+            
+            # 커리어 저장
+            for career_id in update_career_ids:
+                c_form = CareerForm(request.POST, prefix=f'career-{career_id}', instance=Career.objects.filter(pk=career_id).first())
+                if c_form.is_valid():
+                    c_content = c_form.cleaned_data['career_content']
+                    if c_content:
+                        Career.objects.create(career_content=c_content, portfolio=portfolio_data)
+            
+            # 링크 저장
+            for link_id in update_link_ids:
+                l_form = LinkForm(request.POST, prefix=f'link-{link_id}', instance=Links.objects.filter(pk=link_id).first())
+                if l_form.is_valid():
+                    l_content = l_form.cleaned_data['link_content']
+                    if l_content:
+                        Links.objects.create(link=l_form.cleaned_data['link'], link_content=l_content, portfolio=portfolio_data)
+
+        return redirect('accounts:profile', request.user.pk)
+    else:
+        basic = BasicForm(instance=selected_mydata)
+        pjts = [[PjtForm(prefix=f'pjt-{pjt.id}', instance=pjt),
+                PjtImageForm(prefix=f'pjt-{pjt.id}'),
+                DeletePjtImageForm(prefix=f'delete-pjt-{pjt.id}', pjt=pjt),
+                [stack.stack for stack in pjt.stack.all()]] for pjt in my_pjts]
+        if not pjts:
+            pjts = [[PjtForm(prefix='pjt-0'), PjtImageForm(prefix='pjt-0')]]
+        careers = [CareerForm(prefix=f'career-{str(career.id)}', instance=career) for career in selected_my_careers]
+        if not careers:
+            careers = [CareerForm(prefix='career-0')]
+        links = [LinkForm(prefix=f'link-{str(link.id)}', instance=link) for link in selected_my_links]
+        if not links:
+            links = [LinkForm(prefix='link-0')]
             
     mylinks = selected_mydata.links_set.all()
     mycareers = selected_mydata.career_set.all()
     mypjts = selected_mydata.pjts_set.all()
-    # mydata_title = 
-    # my_data = Mydatas.objects.get(title=mydata_title)
     context = {
         'test_mydata': test_mydata,
         'mydata': mydata,
@@ -295,13 +380,42 @@ def p_create(request, template_name):
         'mylinks': mylinks,
         'mycareers': mycareers,
         'mypjts': mypjts,
+        'stacks': TechStack.STACK_CHOICES,
+        'selected_mydata': selected_mydata,
+        'basic': basic,
+        'pjts': pjts,
+        'careers': careers,
+        'links': links,
+        'selected_mydata_stacks': selected_mydata_stacks,
     }
-    return render(request, f'portfolios/{template_name}.html', context)
+    return render(request, f'portfolios/temp_portfolio/{template_name}.html', context)
 
 
 @login_required
-def p_detail(request, portfolio_pk):
-    return
+def p_detail(request, portfolio_name):
+    my_portfolio = Portfolios.objects.get(user=request.user, title=portfolio_name)
+    my_portfolio_stacks = [stack.stack for stack in my_portfolio.stack.all()]
+    my_pjts = Pjts.objects.filter(portfolio=my_portfolio)
+    my_careers = list(Career.objects.filter(portfolio=my_portfolio))
+    my_links = list(Links.objects.filter(portfolio=my_portfolio))
+    my_pjts_images = Pjtimages.objects.filter(portfolio=my_portfolio)
+    pjts = [
+        [my_pjt,
+        Pjtimages.objects.filter(portfolio=my_portfolio, pjt=my_pjt),
+        [stack.stack for stack in my_pjt.stack.all()]]
+        for my_pjt in my_pjts
+    ]
+    context = {
+        'my_portfolio': my_portfolio,
+        'my_pjts': my_pjts,
+        'my_pjts_images': my_pjts_images,
+        'stacks': TechStack.STACK_CHOICES,
+        'pjts': pjts,
+        'careers': my_careers,
+        'links': my_links,
+        'my_portfolio_stacks': my_portfolio_stacks,
+    }
+    return render(request, f'portfolios/p_detail.html', context)
 
 
 @login_required

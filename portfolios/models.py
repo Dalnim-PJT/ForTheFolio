@@ -144,6 +144,9 @@ class Pjts(BaseInfo):
 class Pjtimages(BaseInfo):
     pjt = models.ForeignKey(Pjts, on_delete=models.CASCADE)
     def Pjt_image_path(instance, filename):
-        return f'pjt/{instance.pjt.mydata.user.pk}/{instance.pjt.mydata.title}/{filename}'
+        if instance.pjt.mydata:
+            return f'pjt/{instance.pjt.mydata.user.pk}/{instance.pjt.mydata.title}/{filename}'
+        else:
+            return f'pjt/{instance.pjt.portfolio.user.pk}/{instance.pjt.portfolio.title}/{filename}'
     image = ProcessedImageField(upload_to=Pjt_image_path, blank=True, null=True)
     

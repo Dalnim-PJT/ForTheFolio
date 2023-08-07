@@ -53,12 +53,23 @@
         <a href="{% url 'portfolios:m_delete' md.title %}" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
       </div>
     {% endfor %}
+    {% for mp in myportfolio %}
+      <div>
+        <h3>myportfolio</h3>
+        {{ mp.user }}
+        {{ mp.title }}
+        {{ mp.content }}
+        <div>
+          <a href="{% url 'portfolios:p_detail' mp.title %}">detail</a>
+        </div>
+      </div>
+    {% endfor %}
   </section>
   <section class="profile--list">
     <div class="profile--user--wrap">
       <p>
         {% if user.image %}
-          <img src="{{ user.image.url }}" alt="user image">
+        <img src="{{ user.image.url }}" alt="user image">
         {% endif %}
       </p>
       <p>user name</p>

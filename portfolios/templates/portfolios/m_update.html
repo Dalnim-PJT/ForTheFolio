@@ -120,7 +120,7 @@
     const newLinkEntry = document.createElement("div");
     newLinkEntry.className = "link-entry";
     const newIndex = linkEntries.childElementCount;
-    newLinkEntry.innerHTML = firstLinkEntry.innerHTML.replace(/link-\d+/g, `link-${newIndex}`);
+    newLinkEntry.innerHTML = firstLinkEntry.innerHTML.replace(/link-\d+/g, `link-0${newIndex}`);
     const formInputs = newLinkEntry.getElementsByTagName("input");
     for (let i = 0; i < formInputs.length; i++) {
       formInputs[i].value = "";
@@ -151,7 +151,7 @@
     const newPjtEntry = document.createElement("div");
     newPjtEntry.className = "pjt-entry";
     const newIndex = pjtEntries.childElementCount;
-    newPjtEntry.innerHTML = firstPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-${newIndex}`);
+    newPjtEntry.innerHTML = firstPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-0${newIndex}`);
 
 
     newPjtEntry.querySelector('.select').remove();
@@ -214,7 +214,7 @@
     const newCareerEntry = document.createElement("div");
     newCareerEntry.className = "career-entry";
     const newIndex = careerEntries.childElementCount;
-    newCareerEntry.innerHTML = firstCareerEntry.innerHTML.replace(/career-\d+/g, `career-${newIndex}`);
+    newCareerEntry.innerHTML = firstCareerEntry.innerHTML.replace(/career-\d+/g, `career-0${newIndex}`);
     const formInputs = newCareerEntry.getElementsByTagName("input");
     for (let i = 0; i < formInputs.length; i++) {
       formInputs[i].value = "";

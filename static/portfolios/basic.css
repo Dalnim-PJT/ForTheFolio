@@ -1,5 +1,5 @@
 .pjt--header {
-  position: fixed;
+  /* position: fixed; */
   display: grid;
   grid-template-columns: 150px 1fr;
   width: 100%;
@@ -10,7 +10,7 @@
   justify-content: space-evenly;
 }
 .pjt--article {
-  height: 100vh;
+  /* height: 100vh; */
   padding-top: 100px;
   margin: 0 10rem;
 }
