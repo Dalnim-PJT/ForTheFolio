@@ -191,14 +191,6 @@ class DeletePjtImageForm(forms.Form):
             (image.pk, image.image.url) for image in Pjtimages.objects.filter(pjt=pjt)
         ]
 
-    def clean(self):
-        cleaned_data = super().clean()
-        delete_ids = cleaned_data.get('delete_images')
-        if delete_ids:
-            images = Pjtimages.objects.filter(pk__in=delete_ids)
-            for image in images:
-                os.remove(os.path.join(settings.MEDIA_ROOT, image.image.path))
-            images.delete()
 
 class CareerForm(forms.ModelForm):
     career_content = forms.CharField(

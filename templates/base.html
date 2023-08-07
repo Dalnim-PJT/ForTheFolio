@@ -11,27 +11,36 @@
   </head>
   <body>
     <header class="header--container">
-      <div class="">
+      <div class="header--list">
         <a class="header--logo" href="#">FOR THE FOLIO</a>
         <nav>
-          <ul>
-            <li><a href="{% url 'portfolios:index' %}">템플릿</a></li>
-            <li><a href="#">요금</a></li>
-          </ul>
+          <ul id="navbar" class="header--navbar"></ul>
         </nav>
       </div>
-      <div>
+      <div class="header--user">
         {% if request.user.is_authenticated %}
           <a href="{% url 'accounts:profile' user.pk %}">{{user}}</a>
-
-          <a href="{% url 'accounts:logout' %}">로그아웃</a>
-          {% comment %} <a href="{% url 'accounts:profile' user %}">마이페이지</a> {% endcomment %}
         {% else %}
-          <a href="{% url 'accounts:login' %}">로그인</a>
+          <a class="header--login" href="{% url 'accounts:login' %}">로그인</a>
         {% endif %}
       </div>
     </header>
     <main>{% block content %}{% endblock content %}</main>
     <footer></footer>
+    <script>
+      const navbarItems = JSON.parse('{{ navbar_items|safe }}');
+      const navbar = document.getElementById("navbar");
+    
+      navbarItems.forEach(function(item) {
+          const newElement = document.createElement("li");
+          const link = document.createElement("a");
+          link.href = item.url;
+          link.className = item.class;
+          link.textContent = item.name;
+          newElement.appendChild(link);
+          navbar.appendChild(newElement);
+      });
+      console.log(navbarItems);
+    </script>
   </body>
 </html>

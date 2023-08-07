@@ -273,7 +273,8 @@ def p_create(request, template_name):
     selected_data = None
     selected_mydata = Mydatas.objects.get(user_id=9)
     if request.method == 'POST':
-        pass
+        selected_mydata = Mydatas.objects.get(user_id=request.user.id, title=selected_data)
+        
     else:
         selected_data = request.GET.get('data_title', '개발자정토리')
         if selected_data == '개발자정토리':
