@@ -57,7 +57,9 @@
   <section class="profile--list">
     <div class="profile--user--wrap">
       <p>
-        <img src="{{ user.image.url }}" alt="user image">
+        {% if user.image %}
+          <img src="{{ user.image.url }}" alt="user image">
+        {% endif %}
       </p>
       <p>user name</p>
       <p>{{ user }}</p>
@@ -92,7 +94,7 @@
 
 <article>
   {% if request.user.subscription %}
-    {{ request.user.subscription }}
+    {{ request.user.subscription.price }}
   {% endif %}
 </article>
 

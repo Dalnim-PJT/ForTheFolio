@@ -3,6 +3,7 @@ from .models import Subscription, Payment
 from datetime import timedelta
 from django.utils import timezone
 from django.http import HttpResponseForbidden
+from django.contrib import messages
 
 # Create your views here.
 def index(request):
@@ -18,7 +19,7 @@ def subscribe(request, subscription_id):
     if request.method == 'POST':
         subscription = get_object_or_404(Subscription, id=subscription_id)
 
-        if subscription.title == '1개월 무료' and Payment.objects.filter(user=request.user, price__title='1개월 무료').exists():
+        if subscription.title == '1 개월 무료' and Payment.objects.filter(user=request.user, price__title='1 개월 무료').exists():
             return HttpResponseForbidden("이미 1개월 무료 구독을 사용하셨습니다.")
         
         start_date = timezone.now()
@@ -29,7 +30,7 @@ def subscribe(request, subscription_id):
         payment = Payment(user=request.user, price=subscription, start_date=start_date, end_date=end_date)
         payment.save()
 
-        request.user.subscription = subscription
+        request.user.subscription = payment
         request.user.save()
 
         return redirect('accounts:profile', request.user.pk)
