@@ -257,7 +257,7 @@
   height: 100%;
 }
 
-#image-preview-container {
+.image-preview-container {
   display: flex;
   align-items: center;
   gap: 5px;
@@ -277,15 +277,16 @@
   width: 150px;
   height: 150px;
 }
-
-#placeholder-text {
+.placeholder-text {
   width: 100%;
   text-align: center;
   color: rgb(190,190,190);
   font-weight: 600;
   font-size: 13px;
-  cursor: default;
+  cursor: pointer;
+  display: block;
 }
+
 .image-preview {
   position: relative;
   width: 150px;

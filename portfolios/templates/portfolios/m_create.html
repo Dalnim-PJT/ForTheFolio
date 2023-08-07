@@ -75,12 +75,12 @@
             {{ pjt.pjts_content }}
           </div>
 
-          <div class="pjt--content">
+          <div class="pjt--content image--container">
             <h1>이미지</h1>
-            <div id="image-preview-container" ondrop="handleImageDrop(event)" ondragover="handleDragOver(event)" onclick="openFileInput()">
-              <p id="placeholder-text">클릭하거나 드래그하여 이미지를 추가하세요.</p>
+            <div id="image-preview-container-0" ondrop="handleImageDrop(event,0)" ondragover="handleDragOver(event)" onclick="openFileInput(0)" class="image-preview-container">
+              <p id="placeholder-text-0" class="placeholder-text">클릭하거나 드래그하여 이미지를 추가하세요.</p>
             </div>
-            <input type="file" id="image-upload" multiple style="display: none;">
+            {{ pjtimage }}
           </div>
 
           
@@ -205,7 +205,29 @@
     newPjtEntry.innerHTML = firstPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-${newIndex}`);
     newPjtEntry.querySelector('.select').remove();
     newPjtEntry.querySelector('.select2').remove();
-  
+
+    const imageContainer = newPjtEntry.querySelector("#image-preview-container-0");
+    const imageContents = imageContainer.querySelectorAll(".image-preview")
+    
+    imageContainer.setAttribute("id", `image-preview-container-${newIndex}`);
+    imageContainer.setAttribute("name", `image-preview-container-${newIndex}`);
+    imageContainer.setAttribute("ondrop", `handleImageDrop(event, ${newIndex})`);
+    imageContainer.setAttribute("ondragover", "handleDragOver(event)");
+    imageContainer.setAttribute("onclick", `openFileInput(${newIndex})`);
+    imageContents.forEach((element) => {
+      element.remove();
+    });
+    
+    const placeholderText = newPjtEntry.querySelector("#placeholder-text-0");
+    placeholderText.setAttribute("id", `placeholder-text-${newIndex}`);
+    placeholderText.style.display = "block";
+
+    const fileInput = newPjtEntry.querySelector("#image-upload-0");
+    fileInput.setAttribute("id", `image-upload-${newIndex}`);
+    fileInput.setAttribute("onclick", `openFileInput(${newIndex})`);
+    fileInput.addEventListener("change", function (event) {
+      handleImageUpload(event, newIndex);
+    });
 
     const stacks = {{stacks|safe}};
 
@@ -235,6 +257,7 @@
 
     newPjtEntry.appendChild(pjtContentDiv);
     pjtEntries.appendChild(newPjtEntry);
+    
 
     $(`#p_stack_multi-${newIndex}`).select2();
     
@@ -261,31 +284,31 @@
     }
   });
 
-  function handleImageUpload(event) {
-    const previewContainer = document.getElementById("image-preview-container");
+  function handleImageUpload(event, index) {
+    console.log(index) 
+    const previewContainer = document.getElementById(`image-preview-container-${index}`);
     const files = event.target.files;
 
     for (const file of files) {
       addImageToPreview(previewContainer, file);
     }
-
-    togglePlaceholderText();
+    togglePlaceholderText(Number(previewContainer.getAttribute("id").split("-")[3]));
   }
 
   function handleDragOver(event) {
     event.preventDefault();
   }
 
-  function handleImageDrop(event) {
+  function handleImageDrop(event, index) {
     event.preventDefault();
-    const previewContainer = document.getElementById("image-preview-container");
+    const previewContainer = document.getElementById(`image-preview-container-${index}`);
     const files = event.dataTransfer.files;
 
     for (const file of files) {
       addImageToPreview(previewContainer, file);
     }
 
-    togglePlaceholderText();
+    togglePlaceholderText(Number(previewContainer.getAttribute("id").split("-")[3]));
   }
 
   function addImageToPreview(previewContainer, file) {
@@ -299,37 +322,41 @@
       image.alt = file.name;
       imagePreview.appendChild(image);
 
-      const removeButton = document.createElement("button");
+      const removeButton = document.createElement("div");
       removeButton.className = "remove-image-btn";
       removeButton.textContent = "x";
       removeButton.addEventListener("click", function () {
         imagePreview.remove();
-        togglePlaceholderText();
+        togglePlaceholderText(Number(previewContainer.getAttribute("id").split("-")[3]));
         event.stopPropagation();
       });
-
+      
       imagePreview.appendChild(removeButton);
       previewContainer.appendChild(imagePreview);
+      togglePlaceholderText(Number(previewContainer.getAttribute("id").split("-")[3]));
     };
 
     reader.readAsDataURL(file);
   }
 
-  function openFileInput() {
-    document.getElementById("image-upload").click();
+  function openFileInput(index) {
+    document.getElementById(`image-upload-${index}`).click();
   }
 
-  function togglePlaceholderText() {
-    const placeholderText = document.getElementById("placeholder-text");
-    const previewContainer = document.getElementById("image-preview-container");
-    if (previewContainer.children.length === 0 ) {
+  function togglePlaceholderText(newIndex) {
+    const placeholderText = document.getElementById(`placeholder-text-${newIndex}`);
+    const previewContainer = document.getElementById(`image-preview-container-${newIndex}`);
+    const previewContents = previewContainer.querySelector(".image-preview");
+    if ( !previewContents ) {
       placeholderText.style.display = "block";
     } else {
       placeholderText.style.display = "none";
     }
   }
 
-  document.getElementById("image-upload").addEventListener("change", handleImageUpload);
+  document.getElementById(`image-upload-0`).addEventListener("change", function (event) {
+    handleImageUpload(event, 0);
+  });
   
   function addCareerField() {
     const careerEntries = document.getElementById("career-entries");

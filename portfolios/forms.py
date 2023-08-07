@@ -164,11 +164,14 @@ class PjtForm(forms.ModelForm):
 
 class PjtImageForm(forms.ModelForm):
     image = forms.FileField(
+        label=False,
         required=False,
         widget=forms.ClearableFileInput(
             attrs={
                 'multiple': True, 
                 'placeholder': '프로젝트 이미지',
+                'id': 'image-upload-0',
+                'style': 'display:none;',
             }
         )
     )
