@@ -144,6 +144,7 @@ def profile(request, user_pk):
     person = User.objects.get(pk=user_pk)
     mydata = Mydatas.objects.filter(user=person)
     myportfolio = Portfolios.objects.filter(user=person)
+    user_payments = request.user.payment_set.all()
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         # 여기서는 프로필 편집 부분만 렌더링해서 반환하면 됩니다.
@@ -153,5 +154,6 @@ def profile(request, user_pk):
         'person': person,
         'mydata': mydata,
         'myportfolio': myportfolio,
+        'user_payments': user_payments,
     }
     return render(request, 'accounts/profile.html', context)
