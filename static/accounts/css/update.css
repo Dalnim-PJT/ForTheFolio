@@ -1,0 +1,25 @@
+.update--title {
+  font-size: 1.3rem;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 2rem;
+}
+.update--list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+.update--button {
+  width: 100%;
+}
+p {
+  display: grid;
+  grid-template-columns: 120px 1fr;
+}
+span {
+  display: flex;
+  align-items: flex-end;
+}
+
+.update--del {
+  color: red;
+}

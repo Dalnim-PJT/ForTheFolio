@@ -13,15 +13,7 @@ class CustomUserCreationForm(UserCreationForm):
             }
         )
     )
-    # username = forms.CharField(
-    #     label='이름',
-    #     widget=forms.TextInput(
-    #         attrs={
-    #             'class': 'form-control',
-    #             'placeholder': '유저네임',
-    #         }
-    #     )
-    # )
+    
     password1 = forms.CharField(
         label = '비밀번호',
         widget = forms.PasswordInput(
