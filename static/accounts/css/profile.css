@@ -1,8 +1,41 @@
+body {
+  background-color: #efefef;
+}
 .profile--container {
   display: grid;
-  grid-template-columns: 1fr 200px;
+  grid-template-columns: 1fr 0.3fr;
+  grid-gap: 2rem;
+  margin-top: 2rem;
 }
-section {
-  color:red;
-  font-size: 2rem;
+.ajax--container {
+  padding: 3rem;
+  min-height: 500px;
+  background-color: #fff;
+
+}
+.profile--list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+  padding: 1rem;
+  height: 500px;
+}
+.profile--user--wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  
+}
+.profile--image {
+  width: 150px;
+  border-radius: 50%;
+}
+.profile--useremail {
+  font-size: 1.2rem;
+  font-weight: 600;
+}
+.profile--etc--wrap {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
