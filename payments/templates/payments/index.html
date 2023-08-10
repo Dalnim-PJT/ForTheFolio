@@ -1,5 +1,6 @@
 {% extends 'base.html' %}
 {% load static %}
+{% load subscribe %}
 {% block title %}요금{% endblock title %}
 
 {% block content %} 
@@ -8,19 +9,23 @@
   </article>
 
   {% for sub in subscriptions %}
-    <form method="post" action="{% url 'payments:subscribe' sub.id %}">
+    <form method="post" action="{% url 'payments:kakaopay' sub.id %}">
       {% csrf_token %}
-      {% if request.user.subscription %}
-        {% if request.user.subscription == sub %}
-          <button type="submit" disabled>{{ sub }} (현재 구독 중)</button>
-        {% else %}
-          <button type="button" class="alert-button">{{ sub }}</button>
-        {% endif %}
+      {% if request.user|can_subscribe:sub %}
+        <p>{{ sub }}</p>
+        <button type="submit">결제</button>
       {% else %}
-        <button type="submit">{{ sub }}</button>
+        {% if request.user.subscription.subscription == sub %}
+          <p>{{ sub }} (현재 구독 중)</p>
+          <button type="submit" disabled>결제</button>
+        {% else %}
+          <p>{{ sub }}</p>
+          <button type="button" class="alert-button">결제</button>
+        {% endif %}
       {% endif %}
     </form>
   {% endfor %}
+
 
 <script>
   document.querySelectorAll('.alert-button').forEach(function(button) {
@@ -29,6 +34,5 @@
     });
   });
 </script>
-
 
 {% endblock content %}

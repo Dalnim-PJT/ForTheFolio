@@ -1,0 +1,274 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %}Basic template{% endblock title %}
+
+{% block header %}
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+  <link rel="stylesheet" href="{% static 'portfolios/basic.css' %}" />
+{% endblock header %}
+
+{% block content %}
+
+<form action="{% url 'portfolios:p_create' 'basic' %}" id="form_data_title">
+  <select name="data_title" id="data_title">
+    <option value="{{ test_mydata.title }}">{{ test_mydata.title }}</option>
+    {% for md in mydata %}
+      <option value="{{ md.title }}" {% if selected_data  == md.title %}selected{% endif %}>{{ md.title }}</option>
+    {% endfor %}
+  </select>
+</form>
+<h2>{{selected_data}}</h2>
+<h3>{{selected_mydata}}</h3>
+  
+<article>
+  <header class="pjt--header">
+    <div>Portfolio</div>
+    <nav>
+      <ul class="pjt--header__nav">
+        <li><a href="#aboutme">About me</a></li>
+        <li><a href="#projects">Projects</a></li>
+        <li><a href="#career">Career</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <form action="{% url 'portfolios:p_create' 'basic' %}" method='POST' enctype='multipart/form-data'>
+      {% csrf_token %}
+      <!-- 1. About me -->
+      <article id="aboutme" class="pjt--article">
+        <h1>about me</h1>
+        <div class="aboutme--list">
+          <section class="aboutme__section1">
+            <div class="aboutme__userdata--wrap">
+              <h3>basic</h3>
+              {{ basic.as_p }}
+              <input type="hidden" id="origin_title" name="origin_title" value="{{ my_data.pk }}">
+              <p id="title-error"></p>
+              <div id="link-entries">
+                {% for link in links %}
+                  <div class="link-entry">
+                    {{ link.as_p }}
+                    {% comment %} {% if link.link_content.value %} {% endcomment %}
+                      <button>&#10006;</button>
+                    {% comment %} {% endif %} {% endcomment %}
+                  </div>
+                {% endfor %}
+                {% if links.link_content.value == "" %}
+                  <div class="link-entry">
+                    {{ links.as_table }}
+                  </div>
+                {% endif %}
+              </div>
+              <button type="button" id="add-link-entry">Add LINK Entry</button>
+            </div>
+            <div class="aboutme__userimage--wrap">
+              <img src="{{ selected_mydata.image.url }}" alt="userimage">
+            </div>
+          </section>
+          <section class="aboutme__section2">
+            소개글
+            <div>
+              이웃 노루, 못 그리고 새겨지는 너무나 봅니다. 쉬이 별 별 별들을 이름과, 된 있습니다. 별 별빛이 이름과, 시인의 강아지, 속의 별을 많은 가득 버리었습니다. 하나에 내 잔디가 슬퍼하는 까닭입니다. 동경과 내린 가득 다 멀리 하나의 하나에 헤일 있습니다. 이름자를 된 하나에 이름을 겨울이 봅니다. 까닭이요, 하나에 까닭이요, 써 했던 하나의 별빛이 이 있습니다. 흙으로 불러 별을 가난한 어머니, 하나에 있습니다. 쓸쓸함과 이웃 까닭이요, 그리고 이름자를 너무나 잔디가 위에도 어머님, 있습니다. 한 다 이런 위에 이름을 아름다운 멀듯이, 당신은 이름자를 봅니다.
+            </div>
+          </section>
+          <section>
+            <h3>stack</h3>
+            <select multiple class="select" id="b_stack_multi" name="b_stack_multi" style="width:335px; height:70px;" multiple="multiple">
+              {% for stack in stacks %}
+                <option value="{{stack.0}}" {% if stack.0 in selected_mydata_stacks %}selected{% endif %}>{{stack.0}}</option>
+              {% endfor %}
+            </select>
+          </section>
+        </div>
+      </article>
+
+      <!-- 2. Projects -->
+      <article id="projects" class="pjt--article">
+        <h1>Projects</h1>
+        <section>
+          <div id="pjt-entries">
+            {% for pjt in pjts %}
+              <div class="pjt-entry">
+                {% for pjtform in pjt.0 %}
+                  {{ pjtform }}
+                {% endfor %}
+                {{ pjt.1 }}
+                <div id="delete-image">
+                  {{ pjt.2 }}
+                </div>
+                <select multiple class="select" id="p_stack_multi-{{ forloop.counter0 }}" name="p_stack_multi-{{ forloop.counter0 }}" style="width:335px; height:70px;" multiple="multiple">
+                  {% for stack in stacks %}
+                    <option value="{{stack.0}}" {% if stack.0 in pjt.3 %}selected{% endif %}>{{stack.0}}</option>
+                  {% endfor %}
+                </select>
+                <button>&#10006;</button>
+              </div>
+            {% endfor %}
+          </div>
+          <button type="button" id="add-pjt-entry">Add PJT Entry</button>
+        </section>
+      </article>
+
+      <!-- 3. Career -->
+      <article id="career" class="pjt--article">
+        <section>
+          <div id="career-entries">
+            {% for career in careers %}
+              <div class="career-entry">
+                {{ career.as_table }}
+                <button>&#10006;</button>
+              </div>
+            {% endfor %}
+          </div>
+          <button type="button" id="add-career-entry">Add CAREER Entry</button>
+        </section>
+      </article>
+      <input type="submit" value="등록" id="submit-button">
+    </form>
+  </main>
+  
+</article>
+
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/css/select2.min.css" rel="stylesheet"/>
+<script type="text/javascript" src="https://code.jquery.com/jquery-1.10.2.min.js" /></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-beta.1/dist/js/select2.min.js"></script>
+<script>
+  document.getElementById('data_title').addEventListener('change', function() {
+    document.getElementById('form_data_title').submit();
+  });
+
+  $(document).ready(function() {
+    $("#b_stack_multi").select2();
+  });	
+  $(document).ready(function() {
+    $('[id^="p_stack_multi-"]').select2();
+  });
+  
+  function addLinkField() {
+    const linkEntries = document.getElementById("link-entries");
+    const firstLinkEntry = linkEntries.firstElementChild;
+
+    const newLinkEntry = document.createElement("div");
+    newLinkEntry.className = "link-entry";
+    const newIndex = linkEntries.childElementCount;
+    newLinkEntry.innerHTML = firstLinkEntry.innerHTML.replace(/link-\d+/g, `link-0${newIndex}`);
+    const formInputs = newLinkEntry.getElementsByTagName("input");
+    for (let i = 0; i < formInputs.length; i++) {
+      formInputs[i].value = "";
+    }
+
+    const existingCloseButton = newLinkEntry.querySelector("button");
+    if (existingCloseButton) {existingCloseButton.remove()};
+      
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "&#10006;";
+    newLinkEntry.appendChild(closeButton);
+
+    linkEntries.appendChild(newLinkEntry);
+  }
+  
+  document.getElementById("add-link-entry").addEventListener("click", addLinkField);
+  document.getElementById("link-entries").addEventListener("click", function(event) {
+    if (event.target.tagName === "BUTTON") {
+      const linkEntry = event.target.parentNode;
+      linkEntry.remove();
+    }
+  });
+
+  function addPjtField() {
+    const pjtEntries = document.getElementById("pjt-entries");
+    const firstPjtEntry = pjtEntries.firstElementChild;
+
+    const newPjtEntry = document.createElement("div");
+    newPjtEntry.className = "pjt-entry";
+    const newIndex = pjtEntries.childElementCount;
+    newPjtEntry.innerHTML = firstPjtEntry.innerHTML.replace(/pjt-\d+/g, `pjt-0${newIndex}`);
+
+
+    newPjtEntry.querySelector('.select').remove();
+    newPjtEntry.querySelector('.select2').remove();
+    newPjtEntry.querySelector('#delete-image').remove();
+    
+
+    const stacks = {{stacks|safe}};
+
+    const selectElement = document.createElement('select');
+    selectElement.multiple = true;
+    selectElement.setAttribute('class', 'select select2-hidden-accessible');
+    selectElement.setAttribute('id', `p_stack_multi-${newIndex}`);
+    selectElement.setAttribute('name', `p_stack_multi-${newIndex}`);
+    selectElement.style.width = '335px';
+    selectElement.style.height = '70px';
+    selectElement.setAttribute("data-select2-id", `p_stack_multi-${newIndex}`);
+
+    stacks.forEach((stack) => {
+      const optionElement = document.createElement('option');
+      optionElement.setAttribute('value', stack);
+      optionElement.textContent = stack;
+      selectElement.appendChild(optionElement);
+    });
+
+    const formInputs = newPjtEntry.getElementsByTagName("input");
+    const formTexts = newPjtEntry.getElementsByTagName("textarea");
+    for (let i = 0; i < formInputs.length; i++) {
+      formInputs[i].value = "";
+    }
+    for (let i = 0; i < formTexts.length; i++) {
+      formTexts[i].value = "";
+    }
+
+    const existingCloseButton2 = newPjtEntry.querySelector("button");
+    if (existingCloseButton2) {existingCloseButton2.remove()};
+      
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "&#10006;";
+    newPjtEntry.appendChild(closeButton);
+    
+    newPjtEntry.appendChild(selectElement);
+    pjtEntries.appendChild(newPjtEntry);
+
+    $(`#p_stack_multi-${newIndex}`).select2();
+  }
+  
+  document.getElementById("add-pjt-entry").addEventListener("click", addPjtField);
+  document.getElementById("pjt-entries").addEventListener("click", function(event) {
+    if (event.target.tagName === "BUTTON") {
+      const pjtEntry = event.target.parentNode;
+      pjtEntry.remove();
+    }
+  });
+
+  function addCareerField() {
+    const careerEntries = document.getElementById("career-entries");
+    const firstCareerEntry = careerEntries.firstElementChild;
+
+    const newCareerEntry = document.createElement("div");
+    newCareerEntry.className = "career-entry";
+    const newIndex = careerEntries.childElementCount;
+    newCareerEntry.innerHTML = firstCareerEntry.innerHTML.replace(/career-\d+/g, `career-0${newIndex}`);
+    const formInputs = newCareerEntry.getElementsByTagName("input");
+    for (let i = 0; i < formInputs.length; i++) {
+      formInputs[i].value = "";
+    }
+
+    const existingCloseButton3 = newCareerEntry.querySelector("button");
+    if (existingCloseButton3) {existingCloseButton3.remove()};
+      
+    const closeButton = document.createElement("button");
+    closeButton.innerHTML = "&#10006;";
+    newCareerEntry.appendChild(closeButton);
+
+    careerEntries.appendChild(newCareerEntry);
+  }
+  
+  document.getElementById("add-career-entry").addEventListener("click", addCareerField);
+  document.getElementById("career-entries").addEventListener("click", function(event) {
+    if (event.target.tagName === "BUTTON") {
+      const careerEntry = event.target.parentNode;
+      careerEntry.remove();
+    }
+  });
+</script>
+{% endblock content %}

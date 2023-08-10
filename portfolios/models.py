@@ -14,7 +14,7 @@ class TechStack(models.Model):
                     ("Azure DevOps", "Azure DevOps"),("Backb oneJS", "BackboneJS"),("Bazel", "Bazel"),("Bitbucket", "Bitbucket"),("Bitrise", "Bitrise"),
                     ("C#", "C#"),("C++", "C++"),("Capostrano", "Capostrano"),("CassandraDB", "CassandraDB"),("Celery", "Celery"),("CentOS", "CentOS"),
                     ("Central Dogma", "Central Dogma"),("Ceph", "Ceph"),("Cicle CI", "Cicle CI"),("Clickhouse", "Clickhouse"),("Clojure", "Clojure"),
-                    ("CockroachDB", "CockroachDB"),("Codelgniter", "Codelgniter"),("Confluence", "Confluence"),("Couchbase", "Couchbase"),
+                    ("CockroachDB", "CockroachDB"),("Codelgniter", "Codelgniter"),("Confluence", "Confluence"),("Couchbase", "Couchbase"), ("CSS", "CSS"),
                     ("Cubrid", "Cubrid"),("Cucumber", "Cucumber"),("Cypress", "Cypress"),("Dagger", "Dagger"),("Dart", "Dart"),("Discord", "Discord"),
                     ("Django", "Django"),("Docker", "Docker"),("Docusaurus", "Docusaurus"),("Dooray", "Dooray"),("Drone", "Drone"),
                     ("Dropwizard", "Dropwizard"),("Druid", "Druid"),("ElasticSearch", "ElasticSearch"),("Electron", "Electron"),("Elixir", "Elixir"),
@@ -26,7 +26,7 @@ class TechStack(models.Model):
                     ("Google Cloud Build", "Google Cloud Build"),("Google Data Studio", "Google Data Studio"),("Google Firebase", "Google Firebase"),
                     ("Google Firestore", "Google Firestore"),("Grafana", "Grafana"),("GraphQL", "GraphQL"),("Greenplum", "Greenplum"),("GRPC", "GRPC"),
                     ("Gulp", "Gulp"),("H2", "H2"),("Hadoop", "Hadoop"),("Harbor", "Harbor"),("Hazelcast", "Hazelcast"),("Hbase", "Hbase"),
-                    ("Helm", "Helm"),("Hibernate", "Hibernate"),("Hive", "Hive"),("Hugo", "Hugo"),("Immer", "Immer"),("Impala", "Impala"),
+                    ("Helm", "Helm"),("Hibernate", "Hibernate"),("Hive", "Hive"),("HTML", "HTML"),("Hugo", "Hugo"),("Immer", "Immer"),("Impala", "Impala"),
                     ("InfluxDB", "InfluxDB"),("iOS", "iOS"),("Istio", "Istio"),("Jaeger", "Jaeger"),("Jandi", "Jandi"),("Jasmine", "Jasmine"),
                     ("Java", "Java"),("JavaScript", "JavaScript"),("Jenkins", "Jenkins"),("Jest", "Jest"),("Jira", "Jira"),("Jotai", "Jotai"),
                     ("JUnit", "JUnit"),("Kafka", "Kafka"),("KakaoWork", "KakaoWork"),("Kakotalk", "Kakotalk"),("Karma", "Karma"),
@@ -53,7 +53,7 @@ class TechStack(models.Model):
                     ("Swift", "Swift"),("Tableau", "Tableau"),("Telegram", "Telegram"),("Tensorflow", "Tensorflow"),("Terraform", "Terraform"),
                     ("Testing Library", "Testing Library"),("Thrift", "Thrift"),("Tilwind", "Tilwind"),("Traefik", "Traefik"),("Travis CI", "Travis CI"),
                     ("Trello", "Trello"),("Trino", "Trino"),("Tuist", "Tuist"),("TypeScript", "TypeScript"),("Ubuntu", "Ubuntu"),("Unity", "Unity"),
-                    ("Unix", "Unix"),("Vault", "Vault"),("VueJS", "VueJS"),("Vuex", "Vuex"),("WebRTC", "WebRTC"),("Windows", "Windows"),
+                    ("Unix", "Unix"),("Vault", "Vault"),("Visual Studio", "Visual Studio"),("Visual Studio Code", "Visual Studio Code"),("VueJS", "VueJS"),("Vuex", "Vuex"),("WebRTC", "WebRTC"),("Windows", "Windows"),
                     ("Zabbix", "Zabbix"),("Zeppelin", "Zeppelin"),("Zipkin", "Zipkin"),("Zustand", "Zustand")
                     ]
     stack = models.CharField(max_length=40, choices=STACK_CHOICES)
@@ -144,6 +144,9 @@ class Pjts(BaseInfo):
 class Pjtimages(BaseInfo):
     pjt = models.ForeignKey(Pjts, on_delete=models.CASCADE)
     def Pjt_image_path(instance, filename):
-        return f'pjt/{instance.pjt.mydata.user.pk}/{instance.pjt.mydata.title}/{filename}'
+        if instance.pjt.mydata:
+            return f'pjt/{instance.pjt.mydata.user.pk}/{instance.pjt.mydata.title}/{filename}'
+        else:
+            return f'pjt/{instance.pjt.portfolio.user.pk}/{instance.pjt.portfolio.title}/{filename}'
     image = ProcessedImageField(upload_to=Pjt_image_path, blank=True, null=True)
     

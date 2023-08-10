@@ -32,7 +32,7 @@
     <div class="profile--user--wrap">
       <p>
         {% if user.image %}
-        <img class="profile--image" src="{{ user.image.url }}" alt="user image">
+          <img class="profile--image" src="{{ user.image.url }}" alt="user image">
         {% endif %}
       </p>
       <p class="profile--useremail">{{ user }}</p>
@@ -68,9 +68,11 @@
 {% endif %}
 
 <article>
-  {% if request.user.subscription %}
-    {{ request.user.subscription }}
-  {% endif %}
+  {% for payment in user_payments %}
+    <p>구독타입: {{ payment.subscription.title }}</p>
+    <p>시작날짜: {{ payment.start_date }}</p>
+    <p>종료날짜: {{ payment.end_date }}</p>
+{% endfor %}
 </article>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>

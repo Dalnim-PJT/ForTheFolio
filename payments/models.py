@@ -14,7 +14,7 @@ class Subscription(models.Model):
 
 class Payment(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE)
-    price = models.ForeignKey(Subscription, on_delete=models.CASCADE)
+    subscription = models.ForeignKey(Subscription, on_delete=models.CASCADE) 
     start_date = models.DateTimeField()
     end_date = models.DateTimeField()
 
