@@ -5,6 +5,7 @@ from django.utils import timezone
 from django.http import HttpResponseForbidden
 import requests
 import os
+from dateutil.relativedelta import relativedelta
 
 ADMIN_KEY = os.getenv('ADMIN_KEY')
 
@@ -68,11 +69,19 @@ def kakaopay(request, subscription_id):
         }
         res = requests.post(url, data=data, headers=headers)
         result = res.json()
+        if result.get('msg') == 'onetime order should have amount!':
+            start_date = timezone.now()
+            end_date = start_date + relativedelta(months=subscription.months)
 
-        request.session['tid'] = result['tid']
-        print(request.session['tid'])
-        return redirect(result['next_redirect_pc_url'])
-    
+            payment = Payment.objects.create(user=request.user, subscription=subscription, start_date=start_date, end_date=end_date)
+
+            request.user.subscription = payment
+            request.user.save()
+
+            return redirect('accounts:profile', request.user.pk)
+        else:
+            request.session['tid'] = result['tid']
+            return redirect(result['next_redirect_pc_url'])
     return redirect('payments:index')
 
 
@@ -95,9 +104,7 @@ def pay_success(request, subscription_id):
     result = res.json()
 
     start_date = timezone.now()
-    duration_map = {'1MF': 1, '1M': 1, '3M': 3, '6M': 6, '1Y': 12}
-    duration_months = duration_map.get(subscription.title, 1)
-    end_date = start_date + timedelta(days=30 * duration_months)
+    end_date = start_date + relativedelta(months=subscription.months)
 
     payment = Payment.objects.create(user=request.user, subscription=subscription, start_date=start_date, end_date=end_date)
 
