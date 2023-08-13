@@ -15,6 +15,9 @@ def index(request):
         'subscriptions': subscriptions
     }
 
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'payments/index.html', context)
+
     return render(request, 'payments/index.html', context)
 
 

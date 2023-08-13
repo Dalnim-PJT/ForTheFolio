@@ -1,0 +1,38 @@
+
+.login--signup { 
+  display: grid;
+  grid-template-columns: 1fr 1px 1fr;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  gap: 2rem;
+  height: 60vh;
+}
+  .login--container{
+    height: 300px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+  }
+  .login--list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+  }
+  .border--wrap {
+    width: 1px;
+    height: 100%;
+    background-color: #aaa;
+  }
+  .signup--container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    gap: 2rem;
+  }
+  .signup--logo {
+    font-size: 1.1rem;
+    font-weight: 600;
+  }
