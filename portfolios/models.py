@@ -62,7 +62,7 @@ class TechStack(models.Model):
 # 제공하는 템플릿 모델
 class P_templates(models.Model):
     title = models.CharField(max_length=50)
-    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_templates', blank=True, null=True)
+    like_users = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='like_templates', blank=True)
 
     def __str__(self):
         return self.title
