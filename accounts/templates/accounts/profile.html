@@ -27,6 +27,19 @@
           </div>
        {% endfor %}
     </div>
+    <div>
+      {% for mp in myportfolio %}
+        <h3>myportfolio</h3>
+        {{ mp.user }}
+        {{ mp.title }}
+        {{ mp.content }}
+        <div>
+          <a href="{% url 'portfolios:p_detail' mp.title %}">detail</a>
+          <a href="{% url 'portfolios:p_update' mp.title %}">수정</a>
+          <a href="{% url 'portfolios:p_delete' mp.title %}" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+        </div>
+      {% endfor %}
+    </div>
   </section>
   <section class="profile--list">
     <div class="profile--user--wrap">
