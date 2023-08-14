@@ -42,11 +42,11 @@
           <section class="aboutme__section1">
             <div class="aboutme__userdata--wrap">
               <h3>basic</h3>
-              {{ basic.as_p }}
+              {{ basicform.as_p }}
               <input type="hidden" id="origin_title" name="origin_title" value="{{ my_data.pk }}">
               <p id="title-error"></p>
               <div id="link-entries">
-                {% for link in links %}
+                {% for link in linksform %}
                   <div class="link-entry">
                     {{ link.as_p }}
                     {% comment %} {% if link.link_content.value %} {% endcomment %}
@@ -54,9 +54,9 @@
                     {% comment %} {% endif %} {% endcomment %}
                   </div>
                 {% endfor %}
-                {% if links.link_content.value == "" %}
+                {% if linksform.link_content.value == "" %}
                   <div class="link-entry">
-                    {{ links.as_table }}
+                    {{ linksform.as_table }}
                   </div>
                 {% endif %}
               </div>
@@ -88,7 +88,7 @@
         <h1>Projects</h1>
         <section>
           <div id="pjt-entries">
-            {% for pjt in pjts %}
+            {% for pjt in pjtsform %}
               <div class="pjt-entry">
                 {% for pjtform in pjt.0 %}
                   {{ pjtform }}
@@ -114,7 +114,7 @@
       <article id="career" class="pjt--article">
         <section>
           <div id="career-entries">
-            {% for career in careers %}
+            {% for career in careersform %}
               <div class="career-entry">
                 {{ career.as_table }}
                 <button>&#10006;</button>
