@@ -7,30 +7,33 @@
   <link rel="stylesheet" href="{% static 'accounts/css/update.css' %}" />
   <title>회원정보 수정</title>
   <style>
-    
   </style>
 </head>
 <body>
   <article class="profile--section--wrap">
     <h1 class="update--title">회원정보 수정</h1>
-    <div>
-      <form action="{% url 'accounts:update' %}" method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        <div class="update--list">
-          <div>
-            <span>이메일</span>
-            {{ form.email }}
+    <div class="update--contents">
+      <div>
+        <form action="{% url 'accounts:update' %}" method="POST" enctype="multipart/form-data">
+          {% csrf_token %}
+          <div class="update--list">
+            <div>
+              <span>이메일</span>
+              {{ form.email }}
+            </div>
+            <div>
+              <span>이미지</span>
+              <div>{{ form.image }}</div>
+            </div>
+            <div class="button--wrap--center ">
+              <input class="blue--button--border update--button" type="submit" value="회원정보 수정">
+            </div>
           </div>
-          <div>
-            <span>이미지</span>
-            <div>{{ form.image }}</div>
-          </div>
-          <input class="blue--button--border update--button" type="submit" value="회원정보 수정">
-        </div>
-      </form>
-      <p class="">
+        </form>
+      </div>
+      <div class="update--del--wrap">
         <a class="update--del" href="{% url 'accounts:delete' %}">회원탈퇴</a>
-      </p>
+      </div>
     </div>
   </article>
 </body>
