@@ -19,7 +19,6 @@
   font-size: 22px;
   border: 1px solid #000;
   border-radius: 30px;
-  
 }
 .header--navbar {
   display: flex;
@@ -34,10 +33,22 @@
 }
 
 .main--container {
-  min-height: 80vh;
+  min-height: 73vh;
   margin: auto 10%;
 }
 
+.footer--container {
+  min-height: 100px;
+  color: #fff;
+  background-color: #1D338A;
+}
+.footer--list {
+  display: flex;
+  padding: 2rem 0;
+  margin: auto 10%;
+  gap: 1rem;
+}
+/* form design */
 .form--control {
   /* width: 300px; */
   width: 100%;
@@ -55,7 +66,7 @@
   outline: none;
 }
 
-
+/* button design */
 .button--border {
   color: #000;
   font-size: 1rem;
@@ -96,7 +107,20 @@
   background-color: #00000033;
 }
 
-
+.blue--button--fill {
+  color: #fff;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid #0066ff;
+  border-radius: 30px;
+  background-color: #0066ff;
+  padding: 0.5rem 1.5rem;
+  transition: color 0.3s, background-color 0.3s;
+}
+.blue--button--fill:hover {
+  color: #0066ff;
+  background-color: #0051ff13;
+}
 .sm--button {
   font-size: 13px;
   font-weight: 600;

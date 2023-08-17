@@ -15,7 +15,7 @@
   <body>
     <header class="header--container">
       <div class="header--list">
-        <a class="header--logo" href="#">FOR THE FOLIO</a>
+        <a class="header--logo" href="{% url 'main' %}">FOR THE FOLIO</a>
         <nav>
           <ul id="navbar" class="header--navbar"></ul>
         </nav>
@@ -29,7 +29,14 @@
       </div>
     </header>
     <main class="main--container">{% block content %}{% endblock content %}</main>
-    <footer></footer>
+    <footer class="footer--container">
+      <div class="footer--list">
+        <p>제품(임시)</p>
+        <p>회사소개(임시)</p>
+        <p>커뮤니티(임시)</p>
+        <p>고객지원(임시)</p>
+      </div>
+    </footer>
     <script>
       const navbarItems = JSON.parse('{{ navbar_items|safe }}');
       const navbar = document.getElementById("navbar");
