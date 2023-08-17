@@ -9,21 +9,23 @@
   </article>
 
   {% for sub in subscriptions %}
-    <form method="post" action="{% url 'payments:kakaopay' sub.id %}">
-      {% csrf_token %}
-      {% if request.user|can_subscribe:sub %}
-        <p>{{ sub }}</p>
-        <button type="submit">결제</button>
-      {% else %}
-        {% if request.user.subscription.subscription == sub %}
-          <p>{{ sub }} (현재 구독 중)</p>
-          <button type="submit" disabled>결제</button>
-        {% else %}
+    {% if sub.title != "1개월 무료" or not request.user|used_free %}
+      <form method="post" action="{% url 'payments:kakaopay' sub.id %}">
+        {% csrf_token %}
+        {% if request.user|can_subscribe:sub %}
           <p>{{ sub }}</p>
-          <button type="button" class="alert-button">결제</button>
+          <button type="submit">결제</button>
+        {% else %}
+          {% if request.user.subscription.subscription == sub %}
+            <p>{{ sub }} (현재 구독 중)</p>
+            <button type="submit" disabled>결제</button>
+          {% else %}
+            <p>{{ sub }}</p>
+            <button type="button" class="alert-button">결제</button>
+          {% endif %}
         {% endif %}
-      {% endif %}
-    </form>
+      </form>
+    {% endif %}
   {% endfor %}
 
 

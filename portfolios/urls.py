@@ -16,6 +16,6 @@ urlpatterns = [
     # # portfolios
     path('<str:template_name>/create/', views.p_create, name='p_create'),
     path('<str:portfolio_name>/', views.p_detail, name='p_detail'),
-    # path('<int:portfolio_pk>/update/', views.p_update, name='p_update'),
-    # path('<int:portfolio_pk>/delete/', views.p_delete, name='p_delete'),
+    path('my_portfolio/<str:portfolio_name>/update/', views.p_update, name='p_update'),
+    path('my_portfolio/<str:portfolio_name>/delete/', views.p_delete, name='p_delete'),
 ]
