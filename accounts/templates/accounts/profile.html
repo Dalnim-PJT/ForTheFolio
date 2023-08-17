@@ -12,8 +12,9 @@
 {% block content %}
 <article class="profile--container">
   <section class="ajax--container">
-    <h1 class="mydata--title">내 포트폴리오</h1>
-    <div class="mydata--list">
+    <article class="profile--section--wrap">
+      <h1 class="mydata--title">작품 정보</h1>
+      <div class="mydata--list">
         {% for md in mydata %}
           <div class="mydata--card">
             <p class="mydata--card__pk">{{ md.pk }}</p>
@@ -25,21 +26,9 @@
               </div>
             </div>
           </div>
-       {% endfor %}
-    </div>
-    <div>
-      {% for mp in myportfolio %}
-        <h3>myportfolio</h3>
-        {{ mp.user }}
-        {{ mp.title }}
-        {{ mp.content }}
-        <div>
-          <a href="{% url 'portfolios:p_detail' mp.title %}">detail</a>
-          <a href="{% url 'portfolios:p_update' mp.title %}">수정</a>
-          <a href="{% url 'portfolios:p_delete' mp.title %}" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
-        </div>
-      {% endfor %}
-    </div>
+        {% endfor %}
+      </div>
+    </article>
   </section>
   <section class="profile--list">
     <div class="profile--user--wrap">
@@ -52,7 +41,7 @@
     </div>
     <div class="profile--etc--wrap">
       <p>
-        <a href="{% url 'accounts:mydata' person.pk %}">내 포트폴리오</a>
+        <a href="{% url 'accounts:mydata' person.pk %}">작품 정보</a>
       </p>
       <p>
         <a href="{% url 'accounts:subscribe' %}">구독 정보</a>
@@ -68,7 +57,7 @@
       </p>
     </div>
     <div class="">
-      <a class="blue--button-border" href="{% url 'portfolios:m_create' %}">포트폴리오 만들기 ></a>
+      <a class="blue--button-border" href="{% url 'portfolios:m_create' %}">작품 정보 등록하기 ></a>
     </div>
   </section>
 </article>

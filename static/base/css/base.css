@@ -104,7 +104,7 @@
   transition: color 0.3s, background-color 0.3s;
 }
 .blue--button-border:hover {
-  background-color: #ddd;
+  background-color: #ececec;
 }
 
 .sm--button {
@@ -118,7 +118,7 @@
   transition: color 0.3s, background-color 0.3s;
 }
 .sm--button:hover {
-  background-color: #ddd;
+  background-color: #ececec;
 }
 
 .sm--red--button {
@@ -133,4 +133,10 @@
 }
 .sm--red--button:hover {
   background-color: #fb000064;
+}
+
+.button--wrap--center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }

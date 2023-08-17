@@ -8,10 +8,14 @@ body {
   margin-top: 2rem;
 }
 .ajax--container {
-  padding: 3rem;
   min-height: 500px;
   background-color: #fff;
-
+  box-sizing: border-box;
+}
+.profile--section--wrap {
+  min-height: 500px;
+  margin: 3rem;
+  box-sizing: border-box;
 }
 .profile--list {
   display: flex;

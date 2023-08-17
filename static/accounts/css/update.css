@@ -3,13 +3,20 @@
   border-bottom: 1px solid #ddd;
   margin-bottom: 2rem;
 }
+.update--contents {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 7rem;
+}
 .update--list {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
+
 .update--button {
-  width: 100%;
+  width: 200px;
 }
 p {
   display: grid;
@@ -19,7 +26,12 @@ span {
   display: flex;
   align-items: flex-end;
 }
+.update--del--wrap {
 
+}
 .update--del {
+  text-decoration: underline;
+}
+.update--del:hover {
   color: red;
 }
