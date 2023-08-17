@@ -17,6 +17,11 @@ body {
   margin: 3rem;
   box-sizing: border-box;
 }
+.profile--title {
+  font-size: 1.3rem;
+  border-bottom: 1px solid #ddd;
+  margin-bottom: 2rem;
+}
 .profile--list {
   display: flex;
   flex-direction: column;
@@ -42,4 +47,7 @@ body {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+.active-menu {
+    font-weight: bold;
 }
