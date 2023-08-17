@@ -14,6 +14,7 @@
   flex-direction: column;
   gap: 2rem;
 }
+
 .update--button {
   width: 200px;
 }
@@ -29,6 +30,7 @@ span {
 
 }
 .update--del {
+  text-decoration: underline;
 }
 .update--del:hover {
   color: red;

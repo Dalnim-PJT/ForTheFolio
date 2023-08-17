@@ -13,8 +13,26 @@
 </head>
 <body>
   <article class="profile--section--wrap">
-    <h1 class="update--title">구독 정보</h1>
-    구독 임시 페이지 입니다.
+    <h1 class="update--title">구독 정보</h1>  
+    <!--
+    {% for sub in subscriptions %}
+      <form method="post" action="{% url 'payments:kakaopay' sub.id %}">
+        {% csrf_token %}
+        {% if request.user|can_subscribe:sub %}
+          <p>{{ sub }}</p>
+          <button type="submit">결제</button>
+        {% else %}
+          {% if request.user.subscription.subscription == sub %}
+            <p>{{ sub }} (현재 구독 중)</p>
+            <button type="submit" disabled>결제</button>
+          {% else %}
+            <p>{{ sub }}</p>
+            <button type="button" class="alert-button">결제</button>
+          {% endif %}
+        {% endif %}
+      </form>
+    {% endfor %}
+    -->
   </article>
 </body>
 </html>
