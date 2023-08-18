@@ -1,0 +1,25 @@
+.main--contents1 {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2.5rem;
+  margin: 5rem 0;
+}
+.main--title1 {
+  font-size: 50px;
+}
+.main--contents2 {
+  min-height: 200px;
+  background-color: #efefef;
+  padding: 5rem 0 ;
+}
+.main--templates--list {
+  margin: auto 10%;
+}
+
+
+/* base 수정 */
+.main--container {
+  margin: 0;
+}

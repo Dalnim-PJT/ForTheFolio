@@ -1,10 +1,10 @@
 {% load static %}
+{% load subscribe %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="{% static 'accounts/css/base.css' %}" />
   <link rel="stylesheet" href="{% static 'accounts/css/subscribe.css' %}" />
   <title>구독 정보</title>
   <style>
@@ -13,8 +13,7 @@
 </head>
 <body>
   <article class="profile--section--wrap">
-    <h1 class="update--title">구독 정보</h1>  
-    <!--
+    <h1 class="profile--title">구독 정보</h1>  
     {% for sub in subscriptions %}
       <form method="post" action="{% url 'payments:kakaopay' sub.id %}">
         {% csrf_token %}
@@ -31,8 +30,11 @@
           {% endif %}
         {% endif %}
       </form>
+    {% empty %}
+      <p>구독 정보가 없습니다</p>
+      <br>
+      <a class="sm--button" href="{% url 'payments:index'%}">구독하러 가기(임시) ></a>
     {% endfor %}
-    -->
   </article>
 </body>
 </html>
