@@ -87,6 +87,13 @@ class BasicForm(BaseForm):
     class Meta(BaseForm.Meta):
         model = Mydatas
 
+    def __init__(self, *args, **kwargs):
+        super(BasicForm, self).__init__(*args, **kwargs)
+        instance = kwargs.get('instance')
+                
+        if instance and instance.image:
+            self.fields['image'].initial = instance.image.url
+
 
 class PortfolioForm(BaseForm):
     class Meta(BaseForm.Meta):
@@ -172,7 +179,8 @@ class DeletePjtImageForm(forms.Form):
     delete_images = forms.MultipleChoiceField(
         label='삭제할 이미지 선택',
         required = False,
-        widget=forms.CheckboxSelectMultiple,
+        widget=forms.CheckboxSelectMultiple(
+        ),
         choices=[]
     )
 
@@ -182,6 +190,14 @@ class DeletePjtImageForm(forms.Form):
             (image.pk, image.image.url) for image in Pjtimages.objects.filter(pjt=pjt)
         ]
 
+    def clean(self):
+        cleaned_data = super().clean()
+        delete_ids = cleaned_data.get('delete_images')
+        if delete_ids:
+            images = Pjtimages.objects.filter(pk__in=delete_ids)
+            for image in images:
+                os.remove(os.path.join(settings.MEDIA_ROOT, image.image.path))
+            images.delete()
 
 class CareerForm(forms.ModelForm):
     career_content = forms.CharField(
