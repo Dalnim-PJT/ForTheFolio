@@ -1,5 +1,5 @@
 // select2
-(document).ready(function() {
+$(document).ready(function() {
   $("#b_stack_multi").select2();
 });	
 $(document).ready(function() {
