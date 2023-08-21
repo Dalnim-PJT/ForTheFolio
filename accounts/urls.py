@@ -1,4 +1,5 @@
 from django.urls import path
+from .views import CustomSignupView
 from . import views
 
 app_name = 'accounts'
@@ -6,7 +7,7 @@ app_name = 'accounts'
 urlpatterns = [
   path('login/', views.login, name='login'),
   path('logout/', views.logout, name='logout'),
-  path('signup/', views.signup, name='signup'),
+  path('signup/', CustomSignupView.as_view(), name='signup'),
   path('email_overlap_check/', views.email_overlap_check, name='email_overlap_check'),
   path('delete/', views.delete, name='delete'),
   path('update/', views.update, name='update'),

@@ -60,13 +60,6 @@
     </div>
   </section>
 </article>
-{% if messages %}
-  {% for message in messages %}
-    <script>
-      alert("{{ message }}");
-    </script>
-  {% endfor %}
-{% endif %}
 
 <article>
   {% for payment in user_payments %}
