@@ -190,7 +190,7 @@ def m_update(request, mydata_title):
                     
                     # Add images
                     if pjt_image_form.is_valid():
-                        images = request.FILES.getlist(f'pjt-{pjt_instance.id}-image') or request.FILES.getlist(f'pjt-{i}-image')
+                        images = request.FILES.getlist(f'pjt-{pjt_instance.id}-image') or request.FILES.getlist(f'pjt-0{i}-image')
                         for image in images:
                             Pjtimages.objects.create(image=image, mydata=my_data, pjt=pjt_instance)
                     
