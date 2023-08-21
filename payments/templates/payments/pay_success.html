@@ -1,0 +1,17 @@
+{% extends 'base.html' %}
+{% load static %}
+{% block title %} 결제 성공{% endblock title %}
+
+{% block content %}
+<p>결제 완료</p>
+{{ result }}
+<div>
+  <p>주문번호: {{ result.partner_order_id }}</p>
+</div>
+<div>
+  <p>요금제: {{ result.item_name }}</p>
+</div>
+<div>
+  <p>금액: {{ result.amount.total }}</p>
+</div>
+{% endblock content %}

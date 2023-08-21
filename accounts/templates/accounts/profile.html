@@ -1,84 +1,49 @@
 {% extends 'base.html' %}
 {% load static %}
+
+{% block header %}
 <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}" />
+<link rel="stylesheet" href="{% static 'accounts/css/mydata.css' %}" />
+{% endblock header %}
+
 {% block title %}마이페이지{% endblock title %}
-
-{% block style %}
-.profile--container {
-  display: grid;
-  grid-template-columns: 1fr 0.5fr;
-  grid-gap: 2rem;
-  margin-top: 2rem;
-}
-.mydata--list {
-  border: 1px solid #000000;
-  padding: 1rem;
-  height: 500px;
-}
-.profile--list {
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
-  border: 1px solid #000000;
-  padding: 1rem;
-  height: 500px;
-}
-.profile--user--wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  
-}
-.profile--etc--wrap {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
-
-
-
-{% endblock style %}
 
 {% block content %}
 <article class="profile--container">
-  <section class="mydata--list">
-    {% for md in mydata %}
-      <div>
-        {{ md.pk }}
-        {{ md.user }}
-        {{ md.title }}
-        {{ md.content }}
-        <a href="{% url 'portfolios:m_update' md.title %}">수정</a>
-        <a href="{% url 'portfolios:m_delete' md.title %}" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+  <section class="ajax--container">
+    <article class="profile--section--wrap">
+      <h1 class="profile--title">작품 정보</h1>
+      <div class="mydata--list">
+        {% for md in mydata %}
+          <div class="mydata--card">
+            <p class="mydata--card__pk">{{ md.pk }}</p>
+            <div class="madata--card__btn--wrap">
+              <p>{{ md.title }}</p>
+              <div>
+                <a class="sm--button" href="{% url 'portfolios:m_update' md.title %}">수정</a>
+                <a class="sm--red--button" href="{% url 'portfolios:m_delete' md.title %}" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+              </div>
+            </div>
+          </div>
+        {% endfor %}
       </div>
-    {% endfor %}
-    {% for mp in myportfolio %}
-      <div>
-        <h3>myportfolio</h3>
-        {{ mp.user }}
-        {{ mp.title }}
-        {{ mp.content }}
-        <div>
-          <a href="{% url 'portfolios:p_detail' mp.title %}">detail</a>
-        </div>
-      </div>
-    {% endfor %}
+    </article>
   </section>
   <section class="profile--list">
     <div class="profile--user--wrap">
       <p>
         {% if user.image %}
-        <img src="{{ user.image.url }}" alt="user image">
+          <img class="profile--image" src="{{ user.image.url }}" alt="user image">
         {% endif %}
       </p>
-      <p>user name</p>
-      <p>{{ user }}</p>
+      <p class="profile--useremail">{{ user }}</p>
     </div>
     <div class="profile--etc--wrap">
-      <p>내 포트폴리오</p>
       <p>
-        <a href="{% url 'payments:index' %}">결제 정보</a>
+        <a href="{% url 'accounts:mydata' person.pk %}">작품 정보</a>
+      </p>
+      <p>
+        <a href="{% url 'accounts:subscribe' %}">구독 정보</a>
       </p>
       <p>
         <a href="{% url 'accounts:update' %}">회원정보 수정</a>
@@ -91,7 +56,7 @@
       </p>
     </div>
     <div class="">
-      <a class="blue--button-bgc" href="{% url 'portfolios:m_create' %}">포트폴리오 만들기 ></a>
+      <a class="blue--button-border" href="{% url 'portfolios:m_create' %}">작품 정보 등록하기 ></a>
     </div>
   </section>
 </article>
@@ -104,14 +69,28 @@
 {% endif %}
 
 <article>
-  {% if request.user.subscription %}
-    {{ request.user.subscription.price }}
-  {% endif %}
+  {% for payment in user_payments %}
+    <p>구독타입: {{ payment.subscription.title }}</p>
+    <p>시작날짜: {{ payment.start_date }}</p>
+    <p>종료날짜: {{ payment.end_date }}</p>
+{% endfor %}
 </article>
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 <script>
   $(document).ready(function() {
+    // mydata 링크 클릭 이벤트
+    $('a[href="{% url 'accounts:mydata' person.pk %}"]').click(function(e) {
+      e.preventDefault();
+      loadContentViaAjax($(this).attr('href'));
+    });
+
+    // 결제 정보 링크 클릭 이벤트
+    $('a[href="{% url 'accounts:subscribe' %}"]').click(function(e) {
+      e.preventDefault();
+      loadContentViaAjax($(this).attr('href'));
+    });
+
     // 회원정보 수정 링크 클릭 이벤트
     $('a[href="{% url 'accounts:update' %}"]').click(function(e) {
         e.preventDefault();
@@ -130,7 +109,7 @@
             type: 'GET',
             headers: { 'X-Requested-With': 'XMLHttpRequest' },
             success: function(data) {
-                $('.mydata--list').html(data);
+                $('.ajax--container').html(data);
             }
         });
     }

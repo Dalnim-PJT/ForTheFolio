@@ -1,0 +1,30 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="{% static 'accounts/css/base.css' %}" />
+  <link rel="stylesheet" href="{% static 'accounts/css/mydata.css' %}" />
+  <title>암호 변경</title>
+</head>
+<body>
+    <article class="profile--section--wrap">
+      <h1 class="profile--title">작품 정보</h1>
+      <div class="mydata--list">
+          {% for md in mydata %}
+            <div class="mydata--card">
+              <p class="mydata--card__pk">{{ md.pk }}</p>
+              <div class="madata--card__btn--wrap">
+                <p>{{ md.title }}</p>
+                <div>
+                  <a class="sm--button" href="{% url 'portfolios:m_update' md.title %}">수정</a>
+                  <a class="sm--red--button" href="{% url 'portfolios:m_delete' md.title %}" onclick="return confirm('삭제하시겠습니까?')">삭제</a>
+                </div>
+              </div>
+            </div>
+          {% endfor %}
+      </div>
+    </article>
+</body>
+</html>
