@@ -39,6 +39,10 @@ INSTALLED_APPS = [
     'portfolios',
     'payments',
     'imagekit',
+    'rest_framework',
+    'allauth',
+    'allauth.account',
+    'allauth.socialaccount',
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -145,3 +149,23 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = None
 ACCOUNT_EMAIL_REQUIRED = True
 ACCOUNT_USERNAME_REQUIRED = False
 ACCOUNT_AUTHENTICATION_METHOD = 'email'
+
+# 이메일 인증
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_HOST = 'smtp.gmail.com' # 메일 호스트 서버
+EMAIL_PORT = '587' # gmail과 통신하는 포트
+EMAIL_HOST_USER = os.environ.get("EMAIL") # 발신할 이메일
+EMAIL_HOST_PASSWORD = os.environ.get("APP_KEY") # 발신할 메일의 비밀번호
+EMAIL_USE_TLS = True # TLS 보안 방법
+EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = '/' # 사이트와 관련한 자동응답을 받을 이메일 주소,'webmaster@localhost'
+
+DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+
+ACCOUNT_CONFIRM_EMAIL_ON_GET = True # 유저가 받은 링크를 클릭하면 회원가입 완료되게끔
+ACCOUNT_EMAIL_REQUIRED = True
+ACCOUNT_EMAIL_CONFIRMATION_SIGNUP = True  # 회원 가입 시 이메일 확인 여부
+ACCOUNT_EMAIL_VERIFICATION = "mandatory"
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = 1
+ACCOUNT_EMAIL_CONFIRMATION_HMAC = True  # HMAC 인증 사용 여부
+ACCOUNT_EMAIL_CONFIRMATION_HTML = False  # HTML 이메일 템플릿 사용 여부
+ACCOUNT_EMAIL_SUBJECT_PREFIX = "[이메일 인증]"

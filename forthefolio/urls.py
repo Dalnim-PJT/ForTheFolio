@@ -19,12 +19,15 @@ from django.urls import path, include
 from django.conf import settings
 from django.conf.urls.static import static
 from . import views
+from allauth.account.views import EmailVerificationSentView
 
 
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', views.main, name='main'),
     path('accounts/', include('accounts.urls')),
+    path('auth/confirm-email/', EmailVerificationSentView.as_view(), name='account_email_verification_sent'),
+    path('auth/', include('allauth.urls')),
     path('portfolios/', include('portfolios.urls')),
     path('payments/', include('payments.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

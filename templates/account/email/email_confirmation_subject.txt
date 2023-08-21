@@ -1,0 +1,2 @@
+{% comment %} 이메일 제목 {% endcomment %}
+ForTheFolio 회원가입 인증 메일입니다.

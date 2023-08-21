@@ -168,7 +168,10 @@ def m_update(request, mydata_title):
 
             # Update or add projects
             for i, pjt_id in enumerate(update_pjt_ids):
-                pjt_instance = Pjts.objects.filter(pk=pjt_id).first()
+                try:
+                    pjt_instance = Pjts.objects.get(pk=pjt_id)
+                except Pjts.DoesNotExist:
+                    pjt_instance = None
                 pjt_form = PjtForm(request.POST, prefix=f'pjt-{pjt_id}', instance=pjt_instance)
                 pjt_image_form = PjtImageForm(request.POST, request.FILES, prefix=f'pjt-{pjt_id}')
                 pjt_stack_form = [stack.stack for stack in pjt_instance.stack.all()] if pjt_instance else []
