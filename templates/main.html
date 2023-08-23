@@ -1,1 +1,23 @@
-{% extends 'base.html' %} {% block content %} {% endblock content %}
+{% extends 'base.html' %} 
+
+{% load static %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'main/main.css' %}" />
+{% endblock header %}
+
+{% block content %} 
+  <article>
+    <section class="main--contents1">
+      <h1 class="main--title1">포트폴리오 만들기</h1>
+      <p>Step1. 당신의 작품 정보를 등록하세요.</p>
+      <p>Step2. 템플릿을 선택하여 포트폴리오를 만들어 주세요.</p>
+      <a class="blue--button--fill" href="{% url 'portfolios:m_create' %}">시작하기 > </a>
+    </section>
+    <section class="main--contents2">
+      <div class="main--templates--list">
+        <p>포트폴리오 예시 이미지를 올릴껍니당!</p>
+      </div>
+    </section>
+  </article>
+{% endblock content %}

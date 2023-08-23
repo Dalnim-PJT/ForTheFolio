@@ -22,9 +22,5 @@ class User(AbstractUser):
             path = self.image.path
             if os.path.isfile(path):
                 os.remove(path)
-        if self.background_image:
-            path = self.background_image.path
-            if os.path.isfile(path):
-                os.remove(path)
         super().delete(*args, **kwargs)
     

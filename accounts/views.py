@@ -5,6 +5,11 @@ from django.http import JsonResponse
 from .models import User
 from .forms import CustomUserCreationForm, CustomUserChangeForm, CustomPasswordChangeForm, CustomAuthenticationForm
 from portfolios.models import Mydatas, Portfolios
+from payments.models import Subscription, Payment
+from payments.views import subscribe, kakaopay
+from allauth.account.views import SignupView
+from allauth.account.utils import send_email_confirmation
+from django.urls import reverse_lazy
 
 # Create your views here.
 
@@ -31,23 +36,14 @@ def logout(request):
     return redirect('main')
 
 
-def signup(request):
-    if request.user.is_authenticated:
-        return redirect('main')
-    
-    if request.method == 'POST':
-        form = CustomUserCreationForm(request.POST, request.FILES)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.save()
-            return redirect('accounts:login')
-    else:
-        form = CustomUserCreationForm()
+class CustomSignupView(SignupView):
+    template_name = 'accounts/signup.html'
+    success_url = reverse_lazy('account_login')
 
-    context = {
-        'form': form,
-    }
-    return render(request, 'accounts/signup.html', context)
+    def form_valid(self, form):
+        super().form_valid(form)
+        send_email_confirmation(self.request, self.user)
+        return render(self.request, 'accounts/verification_email_sent.html')
 
 
 def email_overlap_check(request):
@@ -147,6 +143,7 @@ def mydata(request, user_pk):
         'mydata': mydata,
     }
     return render(request, 'accounts/mydata.html', context)
+
 
 @login_required
 def subscribe(request):

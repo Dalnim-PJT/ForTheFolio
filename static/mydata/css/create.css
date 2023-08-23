@@ -3,7 +3,7 @@
 }
 
 .create--container {
-  width: 70%;
+  width: 80%;
   margin: 20px auto ;
   padding: 10px;
   text-align: center;
@@ -299,4 +299,8 @@
   font-size: 25px;
   font-weight: 400;
   color: black;
+}
+
+#delete-image {
+  display: none;
 }

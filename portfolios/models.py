@@ -86,7 +86,7 @@ class Mydatas(models.Model):
 
     def Mydatas_profileimage_path(instance, filename):
         return f'Mydatas/profile/{instance.user.email}/{filename}'
-    image = ProcessedImageField(upload_to=Mydatas_profileimage_path, blank=True, null=True, processors=[ResizeToFill(100,100)])
+    image = ProcessedImageField(upload_to=Mydatas_profileimage_path, blank=True, null=True, processors=[ResizeToFill(150,150)])
     job = models.CharField(max_length=20)
     phone = models.CharField(max_length=20)
     email = models.EmailField()

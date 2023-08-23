@@ -1,8 +1,4 @@
-.mydata--title {
-  font-size: 1.3rem;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 2rem;
-}
+
 .mydata--list {
   display: flex;
   flex-wrap: wrap;
