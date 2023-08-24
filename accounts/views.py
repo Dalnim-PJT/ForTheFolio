@@ -38,10 +38,11 @@ def logout(request):
 
 class CustomSignupView(SignupView):
     template_name = 'accounts/signup.html'
+    form_class = CustomUserCreationForm
     success_url = reverse_lazy('account_login')
-
+    
     def form_valid(self, form):
-        super().form_valid(form)
+        response = super().form_valid(form)
         send_email_confirmation(self.request, self.user)
         return render(self.request, 'accounts/verification_email_sent.html')
 
