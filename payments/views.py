@@ -8,12 +8,14 @@ import os
 from dateutil.relativedelta import relativedelta
 
 ADMIN_KEY = os.getenv('ADMIN_KEY')
+JS_KEY = os.getenv('JS_KEY')
 
 # Create your views here.
 def index(request):
     subscriptions = Subscription.objects.all()
     context = {
-        'subscriptions': subscriptions
+        'subscriptions': subscriptions,
+        'JS_KEY': JS_KEY,
     }
 
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
