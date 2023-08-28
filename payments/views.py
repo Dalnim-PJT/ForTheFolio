@@ -28,8 +28,8 @@ def subscribe(request, subscription_id):
     if request.method == 'POST':
         subscription = get_object_or_404(Subscription, id=subscription_id)
 
-        if subscription.title == '1 개월 무료' and Payment.objects.filter(user=request.user, price__title='1 개월 무료').exists():
-            return HttpResponseForbidden("이미 1개월 무료 구독을 사용하셨습니다.")
+        if subscription.title == '첫 달 무료' and Payment.objects.filter(user=request.user, price__title='첫 달 무료').exists():
+            return HttpResponseForbidden("이미 첫 달 무료 구독을 사용하셨습니다.")
         
         start_date = timezone.now()
         duration_map = {'1MF': 1, '1M': 1, '3M': 3, '6M': 6, '1Y': 12}
