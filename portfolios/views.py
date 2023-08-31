@@ -270,6 +270,8 @@ def m_delete(request, mydata_title):
 def p_create(request, template_name):
     test_mydata = Mydatas.objects.get(user_id=User.objects.get(username='admin'))
     mydata = Mydatas.objects.filter(user_id=request.user.id)
+    if not mydata:
+        return redirect('portfolios:m_create')
     selected_data = request.GET.get('data_title', '포트폴리오 예시')
     if selected_data == '포트폴리오 예시':
         selected_mydata = Mydatas.objects.get(user_id=User.objects.get(username='admin'))
