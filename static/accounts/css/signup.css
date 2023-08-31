@@ -1,0 +1,11 @@
+.signup--container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 60vh;
+}
+.signup--list {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}

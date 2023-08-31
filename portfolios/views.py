@@ -168,7 +168,10 @@ def m_update(request, mydata_title):
 
             # Update or add projects
             for i, pjt_id in enumerate(update_pjt_ids):
-                pjt_instance = Pjts.objects.filter(pk=pjt_id).first()
+                try:
+                    pjt_instance = Pjts.objects.get(pk=pjt_id)
+                except Pjts.DoesNotExist:
+                    pjt_instance = None
                 pjt_form = PjtForm(request.POST, prefix=f'pjt-{pjt_id}', instance=pjt_instance)
                 pjt_image_form = PjtImageForm(request.POST, request.FILES, prefix=f'pjt-{pjt_id}')
                 pjt_stack_form = [stack.stack for stack in pjt_instance.stack.all()] if pjt_instance else []
@@ -190,7 +193,7 @@ def m_update(request, mydata_title):
                     
                     # Add images
                     if pjt_image_form.is_valid():
-                        images = request.FILES.getlist(f'pjt-{pjt_instance.id}-image') or request.FILES.getlist(f'pjt-{i}-image')
+                        images = request.FILES.getlist(f'pjt-{pjt_instance.id}-image') or request.FILES.getlist(f'pjt-0{i}-image')
                         for image in images:
                             Pjtimages.objects.create(image=image, mydata=my_data, pjt=pjt_instance)
                     
@@ -234,18 +237,14 @@ def m_update(request, mydata_title):
 
     else:
         basic = BasicForm(instance=my_data)
-        pjts = [[PjtForm(prefix=f'pjt-{pjt.id}', instance=pjt),
+        pjts = [[
+                PjtForm(prefix=f'pjt-{pjt.id}', instance=pjt),
                 PjtImageForm(prefix=f'pjt-{pjt.id}'),
                 DeletePjtImageForm(prefix=f'delete-pjt-{pjt.id}', pjt=pjt),
-                [stack.stack for stack in pjt.stack.all()]] for pjt in my_pjts]
-        if not pjts:
-            pjts = [[PjtForm(prefix='pjt-0'), PjtImageForm(prefix='pjt-0')]]
-        careers = [CareerForm(prefix=f'career-{str(career.id)}', instance=career) for career in my_careers]
-        if not careers:
-            careers = [CareerForm(prefix='career-0')]
-        links = [LinkForm(prefix=f'link-{str(link.id)}', instance=link) for link in my_links]
-        if not links:
-            links = [LinkForm(prefix='link-0')]
+                [stack.stack for stack in pjt.stack.all()]] 
+                for pjt in my_pjts] or [[PjtForm(prefix='pjt-0'), PjtImageForm(prefix='pjt-0')]]
+        careers = [CareerForm(prefix=f'career-{str(career.id)}', instance=career) for career in my_careers] or [CareerForm(prefix='career-0')]
+        links = [LinkForm(prefix=f'link-{str(link.id)}', instance=link) for link in my_links] or [LinkForm(prefix='link-0')]
 
     context = {
         'stacks': TechStack.STACK_CHOICES,
@@ -355,37 +354,26 @@ def p_create(request, template_name):
 
         return redirect('accounts:profile', request.user.pk)
     else:
-        basic = BasicForm(instance=selected_mydata)
-        pjts = [[PjtForm(prefix=f'pjt-{pjt.id}', instance=pjt),
+        basicform = BasicForm(instance=selected_mydata)
+        pjtsform = [[
+                PjtForm(prefix=f'pjt-{pjt.id}', instance=pjt),
                 PjtImageForm(prefix=f'pjt-{pjt.id}'),
                 DeletePjtImageForm(prefix=f'delete-pjt-{pjt.id}', pjt=pjt),
-                [stack.stack for stack in pjt.stack.all()]] for pjt in my_pjts]
-        if not pjts:
-            pjts = [[PjtForm(prefix='pjt-0'), PjtImageForm(prefix='pjt-0')]]
-        careers = [CareerForm(prefix=f'career-{str(career.id)}', instance=career) for career in selected_my_careers]
-        if not careers:
-            careers = [CareerForm(prefix='career-0')]
-        links = [LinkForm(prefix=f'link-{str(link.id)}', instance=link) for link in selected_my_links]
-        if not links:
-            links = [LinkForm(prefix='link-0')]
+                [stack.stack for stack in pjt.stack.all()]] 
+                for pjt in my_pjts] or [[PjtForm(prefix='pjt-0'), PjtImageForm(prefix='pjt-0')]]
+        careersform = [CareerForm(prefix=f'career-{str(career.id)}', instance=career) for career in selected_my_careers] or [CareerForm(prefix='career-0')]
+        linksform = [LinkForm(prefix=f'link-{str(link.id)}', instance=link) for link in selected_my_links] or [LinkForm(prefix='link-0')]
             
-    mylinks = selected_mydata.links_set.all()
-    mycareers = selected_mydata.career_set.all()
-    mypjts = selected_mydata.pjts_set.all()
     context = {
         'test_mydata': test_mydata,
         'mydata': mydata,
         'selected_data': selected_data,
         'selected_mydata': selected_mydata,
-        'mylinks': mylinks,
-        'mycareers': mycareers,
-        'mypjts': mypjts,
         'stacks': TechStack.STACK_CHOICES,
-        'selected_mydata': selected_mydata,
-        'basic': basic,
-        'pjts': pjts,
-        'careers': careers,
-        'links': links,
+        'basicform': basicform,
+        'pjtsform': pjtsform,
+        'careersform': careersform,
+        'linksform': linksform,
         'selected_mydata_stacks': selected_mydata_stacks,
     }
     return render(request, f'portfolios/temp_portfolio/{template_name}.html', context)
@@ -395,21 +383,16 @@ def p_create(request, template_name):
 def p_detail(request, portfolio_name):
     my_portfolio = Portfolios.objects.get(user=request.user, title=portfolio_name)
     my_portfolio_stacks = [stack.stack for stack in my_portfolio.stack.all()]
-    my_pjts = Pjts.objects.filter(portfolio=my_portfolio)
     my_careers = list(Career.objects.filter(portfolio=my_portfolio))
     my_links = list(Links.objects.filter(portfolio=my_portfolio))
-    my_pjts_images = Pjtimages.objects.filter(portfolio=my_portfolio)
     pjts = [
         [my_pjt,
         Pjtimages.objects.filter(portfolio=my_portfolio, pjt=my_pjt),
         [stack.stack for stack in my_pjt.stack.all()]]
-        for my_pjt in my_pjts
+        for my_pjt in Pjts.objects.filter(portfolio=my_portfolio)
     ]
     context = {
         'my_portfolio': my_portfolio,
-        'my_pjts': my_pjts,
-        'my_pjts_images': my_pjts_images,
-        'stacks': TechStack.STACK_CHOICES,
         'pjts': pjts,
         'careers': my_careers,
         'links': my_links,
@@ -419,13 +402,130 @@ def p_detail(request, portfolio_name):
 
 
 @login_required
-def p_update(request, portfolio_pk):
-    return
+def p_update(request, portfolio_name):
+    my_portfolio = Portfolios.objects.get(title=portfolio_name, user=request.user)
+    my_portfolio_stacks = [stack.stack for stack in my_portfolio.stack.all()]
+    my_pjts = Pjts.objects.filter(portfolio=my_portfolio)
+    my_careers = list(Career.objects.filter(portfolio=my_portfolio))
+    my_links = list(Links.objects.filter(portfolio=my_portfolio))
+
+    if request.method == 'POST':
+        portfolio = PortfolioForm(request.POST, request.FILES, instance=my_portfolio)
+        update_pjt_ids = [k.split('-')[1] for k in request.POST if k.startswith('pjt-') and k.endswith('name')]
+
+        # Delete pjts
+        for my_pjt_id in [my_pjt.id for my_pjt in my_pjts]:
+            if str(my_pjt_id) not in update_pjt_ids:
+                Pjts.objects.get(id=my_pjt_id).delete()
+
+        if portfolio.is_valid():
+            # Update basic information
+            my_portfolio = portfolio.save(commit=False)
+            my_portfolio.user = request.user
+            my_portfolio.save()
+
+            # Update or add stacks
+            b_stacks = request.POST.getlist('b_stack_multi')
+            for b_stack in b_stacks:
+                my_portfolio.stack.add(TechStack.objects.get(stack=b_stack))
+            
+            # Delete stacks
+            for my_portfolio_stack in my_portfolio_stacks:
+                if my_portfolio_stack not in b_stacks:
+                    my_portfolio.stack.remove(TechStack.objects.get(stack=my_portfolio_stack))
+
+            # Update or add projects
+            for i, pjt_id in enumerate(update_pjt_ids):
+                pjt_instance = Pjts.objects.filter(pk=pjt_id).first()
+                pjt_form = PjtForm(request.POST, prefix=f'pjt-{pjt_id}', instance=pjt_instance)
+                pjt_image_form = PjtImageForm(request.POST, request.FILES, prefix=f'pjt-{pjt_id}')
+                pjt_stack_form = [stack.stack for stack in pjt_instance.stack.all()] if pjt_instance else []
+
+                if pjt_form.is_valid():
+                    pjt_instance = pjt_form.save(commit=False)
+                    pjt_instance.portfolio = my_portfolio
+                    pjt_instance.save()
+
+                    # Add stack
+                    p_stacks = request.POST.getlist(f'p_stack_multi-{i}')
+                    for p_stack in p_stacks:
+                        pjt_instance.stack.add(TechStack.objects.get(stack=p_stack))
+                    
+                    # Delete stack
+                    for my_pjt_stack in pjt_stack_form:
+                        if my_pjt_stack not in p_stacks:
+                            pjt_instance.stack.remove(TechStack.objects.get(stack=my_pjt_stack))
+                    
+                    # Add images
+                    if pjt_image_form.is_valid():
+                        images = request.FILES.getlist(f'pjt-{pjt_instance.id}-image') or request.FILES.getlist(f'pjt-{i}-image')
+                        for image in images:
+                            Pjtimages.objects.create(image=image, portfolio=my_portfolio, pjt=pjt_instance)
+                    
+                    # Delete images
+                    pjt_image_delete_form = DeletePjtImageForm(prefix=f'delete-pjt-{pjt_id}', pjt=pjt_instance, data=request.POST)
+                    if pjt_instance and pjt_image_delete_form.is_valid():
+                        pjt_instance.pjtimages_set.filter(pk__in=pjt_image_delete_form.cleaned_data['delete_images']).delete()
+
+            # Update or add careers
+            update_career_ids = [k.split('-')[1] for k in request.POST if k.startswith('career-') and k.endswith('career_content')]
+            for career_id in update_career_ids:
+                c_form = CareerForm(request.POST, prefix=f'career-{career_id}', instance=Career.objects.filter(pk=career_id).first())
+                if c_form.is_valid():
+                    name = c_form.cleaned_data['career_content']
+                    if name:
+                        career_instance = c_form.save(commit=False)
+                        career_instance.portfolio = my_portfolio
+                        career_instance.save()
+            
+            # Delete careers
+            for career in my_careers:
+                if str(career.id) not in update_career_ids:
+                    career.delete()
+
+            # Update or add links
+            update_link_ids = [k.split('-')[1] for k in request.POST if k.startswith('link-') and k.endswith('link_content')]
+            for link_id in update_link_ids:
+                l_form = LinkForm(request.POST, prefix=f'link-{link_id}', instance=Links.objects.filter(pk=link_id).first())
+                if l_form.is_valid():
+                    link_instance = l_form.save(commit=False)
+                    if link_instance.link_content:
+                        link_instance.portfolio = my_portfolio
+                        link_instance.save()
+            
+            # Delete links
+            for link in my_links:
+                if str(link.id) not in update_link_ids:
+                    link.delete()
+            
+            return redirect('portfolios:p_detail', portfolio_name)
+    else:
+        portfolioform = PortfolioForm(instance=my_portfolio)
+        pjts = [[
+                PjtForm(prefix=f'pjt-{pjt.id}', instance=pjt),
+                PjtImageForm(prefix=f'pjt-{pjt.id}'),
+                DeletePjtImageForm(prefix=f'delete-pjt-{pjt.id}', pjt=pjt),
+                [stack.stack for stack in pjt.stack.all()]] 
+                for pjt in my_pjts] or [[PjtForm(prefix='pjt-0'), PjtImageForm(prefix='pjt-0')]]
+        careers = [CareerForm(prefix=f'career-{str(career.id)}', instance=career) for career in my_careers] or [CareerForm(prefix='career-0')]
+        links = [LinkForm(prefix=f'link-{str(link.id)}', instance=link) for link in my_links] or [LinkForm(prefix='link-0')]
+
+    context = {
+        'my_portfolio': my_portfolio,
+        'stacks': TechStack.STACK_CHOICES,
+        'my_portfolio_stacks': my_portfolio_stacks,
+        'portfolioform': portfolioform,
+        'pjts': pjts,
+        'careers': careers,
+        'links': links,
+    }
+    return render(request, 'portfolios/p_update.html', context)
 
 
 @login_required
-def p_delete(request, portfolio_pk):
-    return
-
-
+def p_delete(request, portfolio_name):
+    my_portfolio = Portfolios.objects.get(title=portfolio_name, user=request.user)
+    if request.user == my_portfolio.user:
+        my_portfolio.delete()
+    return redirect('accounts:profile', request.user.pk)
 

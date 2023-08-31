@@ -1,40 +1,84 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load subscribe %}
+
+{% block header %}
+<link rel="stylesheet" href="{% static 'payments/css/index.css' %}" />
+{% endblock header %}
+
 {% block title %}요금{% endblock title %}
 
 {% block content %} 
   <article>
-    <h1>요금 인덱스 페이지 입니다.</h1>
+    <section class="payments--title--container">
+      <div class="payments--title--wrap">
+        <p class="title--header">여러분의 노력이 담긴 포트폴리오,</p>
+        <p class="title--header">FOR THE POLIO와 함께 더 많은 사람들에게 보여주세요.</p>
+        <p>첫 달 <span class="title--highlight">무료</span>로 부담없이 사용해 보세요!</p>
+      </div>
+    </section>
+    <section class="payments--list">
+      {% for sub in subscriptions %}
+        <div class="sub--item sub--{{ sub.title }}">
+            <p>{{ sub.title }}</p>
+            <p class="item--price">₩ {{ sub.price }}</p>
+          {% if sub.price == 0 %}
+            <div class="item--point"></div>
+            <p class="item--text">첫 달, 말 없이 들어와 보세요.</p>
+          {% elif sub.price == 1000 %}
+            <p class="item--text">작은 시작이 큰 결과를 만듭니다.</p>
+          {% elif sub.price == 2500 %}
+            <p class="item--text">함께 성장해보아요.</p>
+          {% elif sub.price == 4500 %}
+            <p class="item--text">작품이 쌓이는 시간.</p>
+          {% elif sub.price == 8000 %}
+            <p class="item--text">긴 호흡으로 더 깊이.</p>
+          {% endif %}
+          {% if sub.title != "1개월 무료" or not request.user|used_free %}
+            <form method="post" action="{% url 'payments:kakaopay' sub.id %}">
+              {% csrf_token %}
+              {% if request.user|can_subscribe:sub %}
+                <button type="submit" class="blue--button--border">결제</button>
+              {% else %}
+                {% if request.user.subscription.subscription == sub %}
+                  <p>{{ sub }} (현재 구독 중)</p>
+                  <button type="submit" disabled>결제</button>
+                {% else %}
+                  <p>{{ sub }}</p>
+                  <button type="button" class="alert-button">결제</button>
+                {% endif %}
+              {% endif %}
+            </form>
+          {% endif %}
+        </div>
+      {% endfor %}
+    </section>
   </article>
 
-  {% for sub in subscriptions %}
-    {% if sub.title != "1개월 무료" or not request.user|used_free %}
-      <form method="post" action="{% url 'payments:kakaopay' sub.id %}">
-        {% csrf_token %}
-        {% if request.user|can_subscribe:sub %}
-          <p>{{ sub }}</p>
-          <button type="submit">결제</button>
-        {% else %}
-          {% if request.user.subscription.subscription == sub %}
-            <p>{{ sub }} (현재 구독 중)</p>
-            <button type="submit" disabled>결제</button>
-          {% else %}
-            <p>{{ sub }}</p>
-            <button type="button" class="alert-button">결제</button>
-          {% endif %}
-        {% endif %}
-      </form>
-    {% endif %}
-  {% endfor %}
+  <a id="chat-channel-button" href="javascript:chatChannel()">
+    <p>고객센터</p>
+  </a>
 
+  <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.3.0/kakao.min.js" integrity="sha384-70k0rrouSYPWJt7q9rSTKpiTfX6USlMYjZUtr1Du+9o4cGvhPAWxngdtVZDdErlh" crossorigin="anonymous"></script>
+  
+  <script>
+    Kakao.init('{{ JS_KEY }}');
+  </script>
 
-<script>
-  document.querySelectorAll('.alert-button').forEach(function(button) {
-    button.addEventListener('click', function() {
-      alert('다른 요금제 선택 불가');
+  <script>
+    function chatChannel() {
+      Kakao.Channel.chat({
+        channelPublicId: '_iZxaVG',
+      });
+    }
+  </script>
+
+  <script>
+    document.querySelectorAll('.alert-button').forEach(function(button) {
+      button.addEventListener('click', function() {
+        alert('다른 요금제 선택 불가');
+      });
     });
-  });
-</script>
+  </script>
 
 {% endblock content %}

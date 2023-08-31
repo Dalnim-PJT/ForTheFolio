@@ -1,25 +1,33 @@
-.update--title {
-  font-size: 1.3rem;
-  border-bottom: 1px solid #ddd;
-  margin-bottom: 2rem;
+
+.update--contents {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  gap: 7rem;
 }
 .update--list {
   display: flex;
   flex-direction: column;
   gap: 2rem;
 }
-.update--button {
-  width: 100%;
-}
-p {
-  display: grid;
-  grid-template-columns: 120px 1fr;
-}
-span {
-  display: flex;
-  align-items: flex-end;
-}
 
+.update--button {
+  width: 200px;
+}
+.update--image--list {
+  border-bottom: 2px solid #aaa;
+  padding-bottom: 0.6rem;
+  transition: border-color 0.3s;
+}
+.update--image--list:hover {
+  border-color: #0066ff;
+}
+.update--del--wrap {
+
+}
 .update--del {
+  text-decoration: underline;
+}
+.update--del:hover {
   color: red;
 }

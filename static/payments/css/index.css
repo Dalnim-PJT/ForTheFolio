@@ -1,0 +1,53 @@
+
+
+.main--container {
+  margin: 0;
+}
+.payments--title--container {
+
+  height: 200px;
+  background-color: rgba(226, 228, 255, 0.62);
+  /* background-color: rgb(226,228,255); */
+}
+.payments--title--wrap {
+  padding: 2rem 0;
+  margin: auto 10%;
+}
+.title--header {
+  font-size: 2rem;
+}
+.title--highlight {
+  font-size: 1.3rem;
+}
+.payments--list {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 1.5rem;
+  padding: 2rem 0;
+  margin: auto 10%;
+}
+.sub--item {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-around;
+  gap: 1.2rem;
+  text-align: center;
+  border: 1px solid #efefef;
+  padding: 2rem 1rem;
+}
+.item--price {
+  font-size: 2rem;
+}
+.item--point {
+  position: absolute;
+  top: 0;
+  left: 0;
+  color: rgb(226,228,255);
+  border-left: 50px solid transparent;
+  border-bottom: 50px solid #793FDF;
+  transform: rotate(180deg);
+}
+.item--text {
+  font-size: 0.9rem;
+}
