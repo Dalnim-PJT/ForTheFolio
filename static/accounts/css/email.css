@@ -1,0 +1,17 @@
+
+.email--container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 2rem;
+  height: 450px;
+}
+.email--wrap {
+  border: 1px solid #0066ff;
+  padding: 2rem;
+  background-color: #adceff;
+}
+.user--email {
+  font-weight: 600;
+}
