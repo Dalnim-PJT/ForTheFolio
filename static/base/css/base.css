@@ -103,8 +103,20 @@
   transition: color 0.3s, background-color 0.3s;
 }
 .red--button--border:hover {
-  /* color: #fff; */
   background-color: #00000033;
+}
+.purple--button--border {
+  color: #793FDF;
+  font-size: 1rem;
+  font-weight: 600;
+  border: 2px solid #793FDF;
+  border-radius: 30px;
+  background-color: #fff;
+  padding: 0.5rem 1.5rem;
+  transition: color 0.3s, background-color 0.3s;
+}
+.purple--button--border:hover {
+  background-color: #7a3fdf1f;
 }
 
 .blue--button--fill {
