@@ -5,8 +5,6 @@ from django.http import JsonResponse
 from .models import User
 from .forms import CustomUserCreationForm, CustomUserChangeForm, CustomPasswordChangeForm, CustomAuthenticationForm
 from portfolios.models import Mydatas, Portfolios
-from payments.models import Subscription, Payment
-from payments.views import subscribe, kakaopay
 from allauth.account.views import SignupView
 from allauth.account.utils import send_email_confirmation
 from django.urls import reverse_lazy
