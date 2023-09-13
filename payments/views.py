@@ -13,7 +13,7 @@ JS_KEY = os.getenv("JS_KEY")
 
 def index(request):
     """
-    
+    요금제 종류
     """
     subscriptions = Subscription.objects.all()
     context = {
@@ -28,6 +28,9 @@ def index(request):
 
 
 def kakaopay(request, subscription_id):
+    """
+    카카오페이 API 사용해서 결제 준비
+    """
     if request.method == "POST":
         subscription = get_object_or_404(Subscription, id=subscription_id)
         price = subscription.price
@@ -51,6 +54,7 @@ def kakaopay(request, subscription_id):
         }
         res = requests.post(url, data=data, headers=headers)
         result = res.json()
+        # 1개월 무료 일 때 카카오페이 결제 과정을 거치지 않고 바로 프로필 페이지로 이동
         if result.get("msg") == "onetime order should have amount!":
             start_date = timezone.now()
             end_date = start_date + relativedelta(months=subscription.months)
@@ -73,6 +77,9 @@ def kakaopay(request, subscription_id):
 
 
 def pay_success(request, subscription_id):
+    """
+    결제 성공 후 호출
+    """
     subscription = get_object_or_404(Subscription, id=subscription_id)
     url = "https://kapi.kakao.com/v1/payment/approve"
 
@@ -112,8 +119,14 @@ def pay_success(request, subscription_id):
 
 
 def pay_fail(request):
+    """
+    결제 실패 후 호출
+    """
     return render(request, "payments/pay_fail.html")
 
 
 def pay_cancel(request):
+    """
+    결제 취소 후 호출
+    """
     return render(request, "payments/pay_cancel.html")
