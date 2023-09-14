@@ -38,6 +38,7 @@ class CustomUserCreationForm(UserCreationForm):
         model = get_user_model()
         fields = ('email', 'password1', 'password2', 'image',)
 
+    
 
 class CustomAuthenticationForm(AuthenticationForm):
     # username = forms.CharField(required=False)

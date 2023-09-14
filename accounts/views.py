@@ -42,7 +42,7 @@ class CustomSignupView(SignupView):
     def form_valid(self, form):
         response = super().form_valid(form)
         send_email_confirmation(self.request, self.user)
-        return render(self.request, 'accounts/verification_email_sent.html')
+        return render(self.request, 'accounts/verification_email_sent.html', {'user': self.user})
 
 
 def email_overlap_check(request):

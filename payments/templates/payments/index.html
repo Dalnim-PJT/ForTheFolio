@@ -1,6 +1,7 @@
 {% extends 'base.html' %}
 {% load static %}
 {% load subscribe %}
+{% load humanize %}
 
 {% block header %}
 <link rel="stylesheet" href="{% static 'payments/css/index.css' %}" />
@@ -21,7 +22,7 @@
       {% for sub in subscriptions %}
         <div class="sub--item sub--{{ sub.title }}">
             <p>{{ sub.title }}</p>
-            <p class="item--price">₩ {{ sub.price }}</p>
+            <p class="item--price">₩ {{ sub.price|intcomma }}</p>
           {% if sub.price == 0 %}
             <div class="item--point"></div>
             <p class="item--text">첫 달, 말 없이 들어와 보세요.</p>
@@ -38,14 +39,14 @@
             <form method="post" action="{% url 'payments:kakaopay' sub.id %}">
               {% csrf_token %}
               {% if request.user|can_subscribe:sub %}
-                <button type="submit" class="blue--button--border">결제</button>
+                <button type="submit" class="purple--button--border">결제</button>
               {% else %}
                 {% if request.user.subscription.subscription == sub %}
                   <p>{{ sub }} (현재 구독 중)</p>
-                  <button type="submit" disabled>결제</button>
+                  <button type="submit" class="purple--button--border" disabled>결제</button>
                 {% else %}
                   <p>{{ sub }}</p>
-                  <button type="button" class="alert-button">결제</button>
+                  <button type="button" class="alert-button purple--button--border">결제</button>
                 {% endif %}
               {% endif %}
             </form>
@@ -55,9 +56,7 @@
     </section>
   </article>
 
-  <a id="chat-channel-button" href="javascript:chatChannel()">
-    <p>고객센터</p>
-  </a>
+  
 
   <script src="https://t1.kakaocdn.net/kakao_js_sdk/2.3.0/kakao.min.js" integrity="sha384-70k0rrouSYPWJt7q9rSTKpiTfX6USlMYjZUtr1Du+9o4cGvhPAWxngdtVZDdErlh" crossorigin="anonymous"></script>
   
