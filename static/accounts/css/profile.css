@@ -10,16 +10,16 @@ body {
 .ajax--container {
   min-height: 500px;
   background-color: #fff;
+  padding: 3rem;
   box-sizing: border-box;
 }
 .profile--section--wrap {
   min-height: 500px;
-  margin: 3rem;
+  /* margin: 3rem; */
   box-sizing: border-box;
 }
 .profile--title {
   font-size: 1.3rem;
-  border-bottom: 1px solid #ddd;
   margin-bottom: 2rem;
 }
 .profile--list {
@@ -51,3 +51,4 @@ body {
 .active-menu {
     font-weight: bold;
 }
+

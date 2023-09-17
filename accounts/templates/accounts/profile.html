@@ -4,6 +4,8 @@
 {% block header %}
 <link rel="stylesheet" href="{% static 'accounts/css/profile.css' %}" />
 <link rel="stylesheet" href="{% static 'accounts/css/mydata.css' %}" />
+<link rel="stylesheet" href="{% static 'accounts/css/update.css' %}" />
+<link rel="stylesheet" href="{% static 'accounts/css/change_password.css' %}" />
 {% endblock header %}
 
 {% block title %}마이페이지{% endblock title %}
@@ -97,15 +99,22 @@
     });
 
     function loadContentViaAjax(url) {
-        $.ajax({
-            url: url,
-            type: 'GET',
-            headers: { 'X-Requested-With': 'XMLHttpRequest' },
-            success: function(data) {
-                $('.ajax--container').html(data);
-            }
-        });
+      $.ajax({
+          url: url,
+          type: 'GET',
+          headers: { 'X-Requested-With': 'XMLHttpRequest' },
+          success: function(data) {
+            const $data = $(data);
+            const newContent = $data.filter('.profile--section--wrap').html();
+            
+            console.log("New content:", newContent);
+            $('.ajax--container').html(newContent);
+          }
+          
+      });
     }
-});
+    
+    
+  });
 </script>
 {% endblock content %}
