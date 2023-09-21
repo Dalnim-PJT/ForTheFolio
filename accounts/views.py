@@ -136,17 +136,14 @@ def mydata(request, user_pk):
     if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
         return render(request, 'accounts/mydata.html', {'person': person, 'mydata': mydata})
 
-
-    context = {
-        'person': person,
-        'mydata': mydata,
-    }
-    return render(request, 'accounts/mydata.html', context)
+    return render(request, 'accounts/mydata.html', {'person': person, 'mydata': mydata})
 
 
 @login_required
 def subscribe(request):
-    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
-        return render(request, 'accounts/subscribe.html')
+    user_payments = request.user.payment_set.all()
 
-    return render(request, 'accounts/subscribe.html')
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return render(request, 'accounts/subscribe.html',  {'user_payments': user_payments})
+
+    return render(request, 'accounts/subscribe.html', {'user_payments': user_payments,})

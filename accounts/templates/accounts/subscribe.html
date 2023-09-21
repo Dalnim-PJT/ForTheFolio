@@ -14,27 +14,26 @@
 <body>
   <article class="profile--section--wrap">
     <h1 class="profile--title">구독 정보</h1>  
-    {% for sub in subscriptions %}
-      <form method="post" action="{% url 'payments:kakaopay' sub.id %}">
-        {% csrf_token %}
-        {% if request.user|can_subscribe:sub %}
-          <p>{{ sub }}</p>
-          <button type="submit">결제</button>
-        {% else %}
-          {% if request.user.subscription.subscription == sub %}
-            <p>{{ sub }} (현재 구독 중)</p>
-            <button type="submit" disabled>결제</button>
-          {% else %}
-            <p>{{ sub }}</p>
-            <button type="button" class="alert-button">결제</button>
-          {% endif %}
-        {% endif %}
-      </form>
-    {% empty %}
-      <p>구독 정보가 없습니다</p>
-      <br>
-      <a class="sm--button" href="{% url 'payments:index'%}">구독하러 가기(임시) ></a>
+    {% for payment in user_payments %}
+      <div class="subscribe--list">
+        <p>당신은 <strong>{{ payment.subscription.title }}</strong> 요금제를 이용하고 계십니다.</p>
+        <div class="subscribe--date--list">
+          <p><span class="date--title">시작</span> {{ payment.start_date|date:"Y년 n월 j일 P h:i" }}</p>
+          <p><span class="date--title">종료</span> {{ payment.end_date|date:"Y년 n월 j일 P h:i" }}</p>
+        </div>
+      </div>
+      
+      {% empty %}
+        <div class="subscribe--empty--list">
+          <div class="empty--text--list">
+            <p>당신의 구독 정보가 없습니다.</p>
+            <p><strong>첫 달 무료</strong> 요금제 부터 시작하세요!</p>
+          </div>
+          <a class="purple--button--border subscribe--button" href="{% url 'payments:index'%}">요금제 보러 가기 ></a>
+        </div>
     {% endfor %}
+    
+
   </article>
 </body>
 </html>
